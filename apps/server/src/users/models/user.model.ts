@@ -1,12 +1,8 @@
-import { Field, ObjectType, ID, registerEnumType } from '@nestjs/graphql';
-import { UserRole } from '@prisma/client';
-
-registerEnumType(UserRole, {
-  name: 'UserRole',
-});
+import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { User as IUser, UserRole } from '@repo/shared-types';
 
 @ObjectType()
-export class User {
+export class User implements Omit<IUser, 'password'> {
   @Field(() => ID)
   id: string;
 
@@ -28,7 +24,7 @@ export class User {
   @Field({ nullable: true })
   bio?: string;
 
-  @Field(() => [String], { defaultValue: [] })
+  @Field(() => [String])
   skills: string[];
 
   @Field({ nullable: true })

@@ -5,6 +5,9 @@ import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { ProjectsModule } from './projects/projects.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -20,6 +23,9 @@ import { UsersModule } from './users/users.module';
     }),
     PrismaModule,
     UsersModule,
+    AuthModule,
+    ProjectsModule,
+    OrdersModule,
   ],
 })
 export class AppModule {}

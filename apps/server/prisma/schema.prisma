@@ -11,9 +11,9 @@ datasource db {
 }
 
 enum UserRole {
-  ADMIN
-  CLIENT
-  FREELANCER
+  ADMIN      @map("ADMIN")
+  CLIENT     @map("CLIENT")
+  FREELANCER @map("FREELANCER")
 }
 
 model User {
@@ -70,6 +70,7 @@ enum OrderStatus {
   COMPLETED
   CANCELLED
   DISPUTED
+  REVISION
 }
 
 model Order {

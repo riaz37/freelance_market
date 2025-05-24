@@ -1,5 +1,8 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { UserRole } from '@prisma/client';
+import {
+  CreateUserInput as ICreateUserInput,
+  UserRole,
+} from '@repo/shared-types';
 import {
   IsEmail,
   IsEnum,
@@ -10,7 +13,7 @@ import {
 } from 'class-validator';
 
 @InputType()
-export class CreateUserInput {
+export class CreateUserInput implements ICreateUserInput {
   @Field()
   @IsEmail()
   email: string;
