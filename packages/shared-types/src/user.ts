@@ -1,8 +1,7 @@
-export enum UserRole {
-  ADMIN = 'ADMIN',
-  CLIENT = 'CLIENT',
-  FREELANCER = 'FREELANCER'
-}
+import { UserRole as PrismaUserRole, Prisma } from '@prisma/client';
+
+export const UserRole = PrismaUserRole;
+export type UserRole = PrismaUserRole;
 
 export interface User {
   id: string;
@@ -31,6 +30,14 @@ export interface CreateUserInput {
   hourlyRate?: number;
 }
 
-export interface UpdateUserInput extends Partial<Omit<CreateUserInput, 'password'>> {
+export interface UpdateUserInput {
   id: string;
+  email?: string | Prisma.StringFieldUpdateOperationsInput;
+  firstName?: string | Prisma.StringFieldUpdateOperationsInput;
+  lastName?: string | Prisma.StringFieldUpdateOperationsInput;
+  role?: UserRole | Prisma.EnumUserRoleFieldUpdateOperationsInput;
+  profilePicture?: string | Prisma.StringFieldUpdateOperationsInput | null;
+  bio?: string | Prisma.StringFieldUpdateOperationsInput | null;
+  skills?: string[] | Prisma.UserUpdateskillsInput;
+  hourlyRate?: number | Prisma.FloatFieldUpdateOperationsInput | null;
 }

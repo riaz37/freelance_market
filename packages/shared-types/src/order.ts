@@ -1,12 +1,7 @@
-export enum OrderStatus {
-  PENDING = 'PENDING',
-  ACCEPTED = 'ACCEPTED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  DISPUTED = 'DISPUTED',
-  REVISION = 'REVISION'
-}
+import { OrderStatus as PrismaOrderStatus, Prisma } from '@prisma/client';
+
+export const OrderStatus = PrismaOrderStatus;
+export type OrderStatus = PrismaOrderStatus;
 
 export interface Order {
   id: string;
@@ -23,10 +18,12 @@ export interface Order {
 export interface CreateOrderInput {
   projectId: string;
   requirements?: string;
+  deliveryDate?: Date;
 }
 
 export interface UpdateOrderInput {
   id: string;
-  status?: OrderStatus;
-  requirements?: string;
+  status?: OrderStatus | Prisma.EnumOrderStatusFieldUpdateOperationsInput;
+  requirements?: string | Prisma.StringFieldUpdateOperationsInput | null;
+  deliveryDate?: Date | Prisma.DateTimeFieldUpdateOperationsInput | null;
 }

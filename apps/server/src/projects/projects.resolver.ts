@@ -4,8 +4,8 @@ import { Project } from './models/project.model';
 import { CreateProjectInput, UpdateProjectInput } from './dto';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '@repo/shared-types';
 
 @Resolver(() => Project)
@@ -47,7 +47,10 @@ export class ProjectsResolver {
   async updateProject(
     @Args('updateProjectInput') updateProjectInput: UpdateProjectInput,
   ) {
-    return this.projectsService.update(updateProjectInput.id, updateProjectInput);
+    return this.projectsService.update(
+      updateProjectInput.id,
+      updateProjectInput,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

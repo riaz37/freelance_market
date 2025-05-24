@@ -1,6 +1,17 @@
 import { Field, InputType, ID, Float } from '@nestjs/graphql';
-import { UpdateProjectInput as IUpdateProjectInput, ProjectStatus } from '@repo/shared-types';
-import { IsNotEmpty, IsString, IsNumber, IsOptional, IsArray, IsEnum, Min } from 'class-validator';
+import {
+  UpdateProjectInput as IUpdateProjectInput,
+  ProjectStatus,
+} from '@repo/shared-types';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  IsEnum,
+  Min,
+} from 'class-validator';
 
 @InputType()
 export class UpdateProjectInput implements IUpdateProjectInput {

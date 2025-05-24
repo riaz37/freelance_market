@@ -1,9 +1,7 @@
-export enum ProjectStatus {
-  DRAFT = 'DRAFT',
-  PUBLISHED = 'PUBLISHED',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED'
-}
+import { ProjectStatus as PrismaProjectStatus, Prisma } from '@prisma/client';
+
+export const ProjectStatus = PrismaProjectStatus;
+export type ProjectStatus = PrismaProjectStatus;
 
 export interface Project {
   id: string;
@@ -24,7 +22,11 @@ export interface CreateProjectInput {
   tags?: string[];
 }
 
-export interface UpdateProjectInput extends Partial<CreateProjectInput> {
+export interface UpdateProjectInput {
   id: string;
-  status?: ProjectStatus;
+  title?: string | Prisma.StringFieldUpdateOperationsInput;
+  description?: string | Prisma.StringFieldUpdateOperationsInput;
+  price?: number | Prisma.FloatFieldUpdateOperationsInput;
+  status?: ProjectStatus | Prisma.EnumProjectStatusFieldUpdateOperationsInput;
+  tags?: string[] | Prisma.ProjectUpdatetagsInput;
 }

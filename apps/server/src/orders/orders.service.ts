@@ -1,10 +1,16 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateOrderInput, UpdateOrderInput, OrderStatus } from '@repo/shared-types';
+import { OrderStatus } from '@repo/shared-types';
+import { NotificationsService } from '../notifications/notifications.service';
+import { CreateOrderInput } from './dto/create-order.input';
+import { UpdateOrderInput } from './dto/update-order.input';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsService: NotificationsService,
+  ) {}
 
   async findAll() {
     return this.prisma.order.findMany({
@@ -69,13 +75,16 @@ export class OrdersService {
     // Get the project to calculate total amount
     const project = await this.prisma.project.findUnique({
       where: { id: createOrderInput.projectId },
+      include: {
+        freelancer: true,
+      },
     });
 
     if (!project) {
       throw new NotFoundException('Project not found');
     }
 
-    return this.prisma.order.create({
+    const order = await this.prisma.order.create({
       data: {
         ...createOrderInput,
         clientId,
@@ -91,12 +100,27 @@ export class OrdersService {
         },
       },
     });
+
+    // Send notification via Kafka
+    await this.notificationsService.sendOrderEvent('ORDER_PLACED', {
+      orderId: order.id,
+      projectId: project.id,
+      projectTitle: project.title,
+      clientId: clientId,
+      freelancerId: project.freelancerId,
+    });
+
+    return order;
   }
 
   async update(id: string, updateOrderInput: UpdateOrderInput) {
     return this.prisma.order.update({
       where: { id },
-      data: updateOrderInput,
+      data: {
+        status: updateOrderInput.status,
+        requirements: updateOrderInput.requirements,
+        deliveryDate: updateOrderInput.deliveryDate,
+      },
       include: {
         client: true,
         project: {
@@ -109,7 +133,7 @@ export class OrdersService {
   }
 
   async updateStatus(id: string, status: OrderStatus) {
-    return this.prisma.order.update({
+    const order = await this.prisma.order.update({
       where: { id },
       data: { status },
       include: {
@@ -121,5 +145,34 @@ export class OrdersService {
         },
       },
     });
+
+    // Send notification via Kafka based on status
+    const eventType = this.getEventTypeFromStatus(status);
+    if (eventType) {
+      await this.notificationsService.sendOrderEvent(eventType, {
+        orderId: order.id,
+        projectId: order.project.id,
+        projectTitle: order.project.title,
+        clientId: order.clientId,
+        freelancerId: order.project.freelancerId,
+        senderId: order.project.freelancerId,
+        receiverId: order.clientId,
+      });
+    }
+
+    return order;
+  }
+
+  private getEventTypeFromStatus(status: OrderStatus): string | null {
+    switch (status) {
+      case OrderStatus.ACCEPTED:
+        return 'ORDER_ACCEPTED';
+      case OrderStatus.COMPLETED:
+        return 'ORDER_COMPLETED';
+      case OrderStatus.CANCELLED:
+        return 'ORDER_CANCELLED';
+      default:
+        return null;
+    }
   }
 }
