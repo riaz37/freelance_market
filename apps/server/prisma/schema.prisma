@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CLIENT
+  FREELANCER
+}
+
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  password       String
+  firstName      String
+  lastName       String
+  role           UserRole
+  profilePicture String?
+  bio            String?
+  skills         String[]  @default([])
+  hourlyRate     Float?
+  isVerified     Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  freelancerProjects Project[]        @relation("FreelancerProjects")
+  clientOrders       Order[]          @relation("ClientOrders")
+  sentNotifications  Notification[]   @relation("SenderNotifications")
+  receivedNotifications Notification[] @relation("ReceiverNotifications")
+  reviews           Review[]          @relation("ReceivedReviews")
+  givenReviews      Review[]          @relation("GivenReviews")
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  COMPLETED
+  CANCELLED
+}
+
+model Project {
+  id           String        @id @default(uuid())
+  title        String
+  description  String
+  status       ProjectStatus @default(DRAFT)
+  price        Float
+  freelancerId String
+  freelancer   User          @relation("FreelancerProjects", fields: [freelancerId], references: [id])
+  tags         String[]      @default([])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  orders       Order[]
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  projectId   String
+  project     Project     @relation(fields: [projectId], references: [id])
+  clientId    String
+  client      User        @relation("ClientOrders", fields: [clientId], references: [id])
+  status      OrderStatus @default(PENDING)
+  totalAmount Float
+  requirements String?
+  deliveryDate DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  reviews     Review[]
+  messages    Message[]
+}
+
+enum NotificationType {
+  ORDER_PLACED
+  ORDER_ACCEPTED
+  ORDER_COMPLETED
+  ORDER_CANCELLED
+  PAYMENT_RECEIVED
+  MESSAGE_RECEIVED
+  REVIEW_RECEIVED
+}
+
+model Notification {
+  id          String           @id @default(uuid())
+  type        NotificationType
+  content     String
+  isRead      Boolean          @default(false)
+  senderId    String
+  sender      User             @relation("SenderNotifications", fields: [senderId], references: [id])
+  receiverId  String
+  receiver    User             @relation("ReceiverNotifications", fields: [receiverId], references: [id])
+  createdAt   DateTime         @default(now())
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  senderId  String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  rating    Int      @db.SmallInt
+  comment   String?
+  fromId    String
+  from      User     @relation("GivenReviews", fields: [fromId], references: [id])
+  toId      String
+  to        User     @relation("ReceivedReviews", fields: [toId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model SystemStats {
+  id                String   @id @default(uuid())
+  totalUsers        Int      @default(0)
+  totalProjects     Int      @default(0)
+  totalOrders       Int      @default(0)
+  activeOrders      Int      @default(0)
+  completedOrders   Int      @default(0)
+  totalRevenue      Float    @default(0)
+  lastUpdated       DateTime @default(now())
+}
