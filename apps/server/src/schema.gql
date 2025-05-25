@@ -51,10 +51,12 @@ type Mutation {
   publishProject(id: String!): Project!
   register(registerInput: RegisterInput!): AuthResponse!
   requestRevision(id: String!): Order!
+  resendVerificationCode(resendVerificationInput: ResendVerificationInput!): ResendVerificationResponse!
   startOrder(id: String!): Order!
   updateOrder(updateOrderInput: UpdateOrderInput!): Order!
   updateProject(updateProjectInput: UpdateProjectInput!): Project!
   updateSystemStats: Boolean!
+  verifyEmail(verifyEmailInput: VerifyEmailInput!): VerificationResponse!
 }
 
 type Notification {
@@ -203,6 +205,14 @@ input RegisterInput {
   skills: [String!]! = []
 }
 
+input ResendVerificationInput {
+  email: String!
+}
+
+type ResendVerificationResponse {
+  message: String!
+}
+
 type Subscription {
   dashboardStatsUpdated: DashboardStats!
   orderUpdates: String!
@@ -251,4 +261,14 @@ enum UserRole {
 
   """Freelancer who can work on projects"""
   FREELANCER
+}
+
+type VerificationResponse {
+  message: String!
+  user: User
+}
+
+input VerifyEmailInput {
+  email: String!
+  verificationCode: String!
 }

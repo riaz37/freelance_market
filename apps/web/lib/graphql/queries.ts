@@ -178,3 +178,27 @@ export const RECENT_ACTIVITY_SUBSCRIPTION = gql`
     userActivity
   }
 `;
+
+// Email Verification Mutations
+export const VERIFY_EMAIL_MUTATION = gql`
+  mutation VerifyEmail($verifyEmailInput: VerifyEmailInput!) {
+    verifyEmail(verifyEmailInput: $verifyEmailInput) {
+      message
+      user {
+        id
+        email
+        firstName
+        lastName
+        isVerified
+      }
+    }
+  }
+`;
+
+export const RESEND_VERIFICATION_MUTATION = gql`
+  mutation ResendVerificationCode($resendVerificationInput: ResendVerificationInput!) {
+    resendVerificationCode(resendVerificationInput: $resendVerificationInput) {
+      message
+    }
+  }
+`;

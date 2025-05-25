@@ -70,6 +70,10 @@ export class RegisterInput {
     skills: string[];
 }
 
+export class ResendVerificationInput {
+    email: string;
+}
+
 export class UpdateOrderInput {
     deliveryDate?: Nullable<DateTime>;
     id: string;
@@ -84,6 +88,11 @@ export class UpdateProjectInput {
     status?: Nullable<ProjectStatus>;
     tags?: Nullable<string[]>;
     title?: Nullable<string>;
+}
+
+export class VerifyEmailInput {
+    email: string;
+    verificationCode: string;
 }
 
 export class AuthResponse {
@@ -124,6 +133,8 @@ export abstract class IMutation {
 
     abstract requestRevision(id: string): Order | Promise<Order>;
 
+    abstract resendVerificationCode(resendVerificationInput: ResendVerificationInput): ResendVerificationResponse | Promise<ResendVerificationResponse>;
+
     abstract startOrder(id: string): Order | Promise<Order>;
 
     abstract updateOrder(updateOrderInput: UpdateOrderInput): Order | Promise<Order>;
@@ -131,6 +142,8 @@ export abstract class IMutation {
     abstract updateProject(updateProjectInput: UpdateProjectInput): Project | Promise<Project>;
 
     abstract updateSystemStats(): boolean | Promise<boolean>;
+
+    abstract verifyEmail(verifyEmailInput: VerifyEmailInput): VerificationResponse | Promise<VerificationResponse>;
 }
 
 export class Notification {
@@ -217,6 +230,10 @@ export abstract class IQuery {
     abstract users(): User[] | Promise<User[]>;
 }
 
+export class ResendVerificationResponse {
+    message: string;
+}
+
 export abstract class ISubscription {
     abstract dashboardStatsUpdated(): DashboardStats | Promise<DashboardStats>;
 
@@ -240,6 +257,11 @@ export class User {
     role: UserRole;
     skills: string[];
     updatedAt: DateTime;
+}
+
+export class VerificationResponse {
+    message: string;
+    user?: Nullable<User>;
 }
 
 export type DateTime = any;
