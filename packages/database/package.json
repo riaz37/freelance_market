@@ -1,5 +1,5 @@
 {
-  "name": "@repo/shared-types",
+  "name": "@repo/database",
   "version": "0.0.0",
   "private": true,
   "main": "./dist/index.js",
@@ -8,16 +8,15 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
-    "lint": "eslint . --max-warnings 0",
-    "check-types": "tsc --noEmit"
+    "db:generate": "dotenv -e ../../.env -- prisma generate",
+    "db:push": "dotenv -e ../../.env -- prisma db push",
+    "db:studio": "dotenv -e ../../.env -- prisma studio"
   },
   "dependencies": {
-    "@repo/database": "workspace:*"
+    "@prisma/client": "^6.8.2"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "eslint": "^9.27.0",
+    "prisma": "^6.8.2",
     "tsup": "^8.0.2",
     "typescript": "5.8.2"
   }

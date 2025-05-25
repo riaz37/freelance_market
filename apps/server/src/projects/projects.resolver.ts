@@ -1,12 +1,13 @@
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { ProjectsService } from './projects.service';
 import { Project } from './models/project.model';
-import { CreateProjectInput, UpdateProjectInput } from './dto';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../common/guards/roles.guard';
-import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '@repo/shared-types';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { UpdateProjectInput } from './dto/update-project.input';
+import { CreateProjectInput } from './dto/create-project.input';
 
 @Resolver(() => Project)
 export class ProjectsResolver {

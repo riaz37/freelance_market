@@ -19,6 +19,8 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@repo/shared-types": ["../../packages/shared-types/src"]
-    }
-  }
+    },
+    "preserveSymlinks": true
+  },
+  "exclude": ["node_modules", "dist", "../../packages/shared-types"]
 }

@@ -1,7 +1,8 @@
-import { ProjectStatus as PrismaProjectStatus, Prisma } from '@prisma/client';
+import { Prisma } from '@repo/database';
+import { ProjectStatus } from './enums';
 
-export const ProjectStatus = PrismaProjectStatus;
-export type ProjectStatus = PrismaProjectStatus;
+// Re-export the enum from centralized location
+export { ProjectStatus };
 
 export interface Project {
   id: string;

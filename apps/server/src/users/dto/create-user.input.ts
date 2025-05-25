@@ -1,8 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import {
-  CreateUserInput as ICreateUserInput,
-  UserRole,
-} from '@repo/shared-types';
+import { CreateUserInput as ICreateUserInput, UserRole } from '@repo/shared-types';
 import {
   IsEmail,
   IsEnum,

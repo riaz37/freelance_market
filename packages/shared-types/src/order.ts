@@ -1,7 +1,8 @@
-import { OrderStatus as PrismaOrderStatus, Prisma } from '@prisma/client';
+import { Prisma } from '@repo/database';
+import { OrderStatus } from './enums';
 
-export const OrderStatus = PrismaOrderStatus;
-export type OrderStatus = PrismaOrderStatus;
+// Re-export the enum from centralized location
+export { OrderStatus };
 
 export interface Order {
   id: string;

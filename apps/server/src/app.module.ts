@@ -3,6 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+
+// Import GraphQL enum registrations BEFORE any other imports that use them
+import './common/graphql-enums';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -11,11 +14,13 @@ import { OrdersModule } from './orders/orders.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { KafkaModule } from './kafka/kafka.module';
 import { AdminModule } from './admin/admin.module';
+import { AppResolver } from './app.resolver';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '../../.env',
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -23,15 +28,22 @@ import { AdminModule } from './admin/admin.module';
       sortSchema: true,
       playground: true,
       context: ({ req }) => ({ req }),
+      debug: true,
+      introspection: true,
+      definitions: {
+        path: join(process.cwd(), 'src/graphql.ts'),
+        outputAs: 'class',
+      },
     }),
     PrismaModule,
-    KafkaModule,
     UsersModule,
     AuthModule,
     ProjectsModule,
     OrdersModule,
     NotificationsModule,
+    KafkaModule,
     AdminModule,
   ],
+  providers: [AppResolver],
 })
 export class AppModule {}

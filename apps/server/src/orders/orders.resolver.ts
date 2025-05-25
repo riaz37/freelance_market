@@ -1,12 +1,13 @@
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { OrdersService } from './orders.service';
 import { Order } from './models/order.model';
-import { CreateOrderInput, UpdateOrderInput } from './dto';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../common/guards/roles.guard';
-import { Roles } from '../common/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 import { UserRole, OrderStatus } from '@repo/shared-types';
+import { CreateOrderInput } from './dto/create-order.input';
+import { UpdateOrderInput } from './dto/update-order.input';
 
 @Resolver(() => Order)
 export class OrdersResolver {

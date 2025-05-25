@@ -1,8 +1,10 @@
-import { UserRole as PrismaUserRole, Prisma } from '@prisma/client';
+import { Prisma } from '@repo/database';
+import { UserRole } from './enums';
 
-export const UserRole = PrismaUserRole;
-export type UserRole = PrismaUserRole;
+// Re-export the enum from centralized location
+export { UserRole };
 
+// Define interfaces
 export interface User {
   id: string;
   email: string;
@@ -40,4 +42,5 @@ export interface UpdateUserInput {
   bio?: string | Prisma.StringFieldUpdateOperationsInput | null;
   skills?: string[] | Prisma.UserUpdateskillsInput;
   hourlyRate?: number | Prisma.FloatFieldUpdateOperationsInput | null;
+  isVerified?: boolean | Prisma.BoolFieldUpdateOperationsInput;
 }
