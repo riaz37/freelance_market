@@ -18,7 +18,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "generate:schema": "ts-node src/generate-schema.ts"
+    "generate:schema": "ts-node src/generate-schema.ts",
+    "seed:admin": "ts-node scripts/seed-admin.ts",
+    "deploy:build": "npm run build",
+    "deploy:migrate": "npx prisma migrate deploy",
+    "deploy:seed": "npm run seed:admin",
+    "deploy:start": "node dist/main"
   },
   "dependencies": {
     "@apollo/server": "^4.12.1",
@@ -35,6 +40,7 @@
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "dotenv": "^16.5.0",
     "graphql": "^16.11.0",
     "kafkajs": "^2.2.4",
     "passport": "^0.7.0",

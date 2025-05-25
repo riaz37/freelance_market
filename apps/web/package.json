@@ -8,10 +8,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --max-warnings 0",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen:watch": "graphql-codegen --config codegen.ts --watch"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
+    "@repo/shared-types": "workspace:*",
+    "@apollo/client": "^3.8.8",
+    "@heroicons/react": "^2.0.18",
+    "graphql": "^16.8.1",
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
@@ -22,6 +28,12 @@
     "@types/node": "^22.15.3",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/client-preset": "^4.1.0",
+    "@graphql-codegen/introspection": "^4.0.0",
+    "@graphql-codegen/typescript": "^4.0.1",
+    "@graphql-codegen/typescript-operations": "^4.0.1",
+    "@graphql-codegen/typescript-react-apollo": "^4.1.0",
     "eslint": "^9.27.0",
     "typescript": "5.8.2"
   }
