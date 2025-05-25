@@ -10,36 +10,52 @@ import {
   CurrencyDollarIcon,
   CheckCircleIcon,
   ClockIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
 } from '@heroicons/react/24/outline';
 
 interface StatCardProps {
   title: string;
   value: string | number;
-  icon: React.ComponentType<any>;
-  color: string;
+  icon: React.ComponentType<{ className?: string }>;
   change?: string;
+  changeType?: 'increase' | 'decrease';
+  description?: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon: Icon, color, change }) => (
-  <div className="bg-white overflow-hidden shadow rounded-lg">
-    <div className="p-5">
-      <div className="flex items-center">
-        <div className="flex-shrink-0">
-          <Icon className={`h-6 w-6 ${color}`} />
-        </div>
-        <div className="ml-5 w-0 flex-1">
-          <dl>
-            <dt className="text-sm font-medium text-gray-500 truncate">{title}</dt>
-            <dd className="text-lg font-medium text-gray-900">{value}</dd>
-          </dl>
-        </div>
+const StatCard: React.FC<StatCardProps> = ({
+  title,
+  value,
+  icon: Icon,
+  change,
+  changeType = 'increase',
+  description = 'from last month'
+}) => (
+  <div className="bg-white rounded-xl border border-slate-200 p-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm font-medium text-slate-600">{title}</p>
+        <p className="text-2xl font-semibold text-slate-900 mt-1">{value}</p>
       </div>
-      {change && (
-        <div className="mt-3">
-          <span className="text-sm text-green-600">{change}</span>
-        </div>
-      )}
+      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+        <Icon className="h-6 w-6 text-slate-600" />
+      </div>
     </div>
+    {change && (
+      <div className="flex items-center mt-4">
+        <div className={`flex items-center text-sm ${
+          changeType === 'increase' ? 'text-green-600' : 'text-red-600'
+        }`}>
+          {changeType === 'increase' ? (
+            <ArrowUpIcon className="h-4 w-4 mr-1" />
+          ) : (
+            <ArrowDownIcon className="h-4 w-4 mr-1" />
+          )}
+          <span className="font-medium">{change}</span>
+        </div>
+        <span className="text-sm text-slate-500 ml-2">{description}</span>
+      </div>
+    )}
   </div>
 );
 
@@ -50,20 +66,19 @@ const Dashboard: React.FC = () => {
   if (statsLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500"></div>
+        <div className="w-8 h-8 border-2 border-slate-300 border-t-slate-900 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (statsError) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <div className="flex">
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">Error loading dashboard</h3>
-            <div className="mt-2 text-sm text-red-700">
-              <p>{statsError.message}</p>
-            </div>
+      <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+        <div className="flex items-center">
+          <div className="w-5 h-5 bg-red-500 rounded-full mr-3"></div>
+          <div>
+            <h3 className="text-sm font-medium text-red-900">Error loading dashboard</h3>
+            <p className="text-sm text-red-700 mt-1">{statsError.message}</p>
           </div>
         </div>
       </div>
@@ -73,92 +88,143 @@ const Dashboard: React.FC = () => {
   const stats = statsData?.adminDashboardStats;
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Dashboard Overview</h1>
-        <p className="mt-2 text-sm text-gray-700">
-          Welcome to the Freelance Market Admin Panel
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
+        <p className="text-slate-600 mt-1">
+          Welcome back! Here's what's happening with your platform.
         </p>
       </div>
 
       {/* System Health */}
-      <div className="mb-6">
-        <div className="bg-white shadow rounded-lg p-4">
-          <div className="flex items-center">
-            <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2" />
-            <span className="text-sm font-medium text-gray-900">System Status:</span>
-            <span className={`ml-2 text-sm ${healthLoading ? 'text-yellow-600' : 'text-green-600'}`}>
-              {healthLoading ? 'Checking...' : healthData?.healthCheck || 'Online'}
-            </span>
-          </div>
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="flex items-center">
+          <div className={`w-3 h-3 rounded-full mr-3 ${
+            healthLoading ? 'bg-yellow-500' : 'bg-green-500'
+          }`}></div>
+          <span className="text-sm font-medium text-slate-900">System Status:</span>
+          <span className={`ml-2 text-sm font-medium ${
+            healthLoading ? 'text-yellow-600' : 'text-green-600'
+          }`}>
+            {healthLoading ? 'Checking...' : healthData?.healthCheck || 'Online'}
+          </span>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard
           title="Total Users"
-          value={stats?.totalUsers || 0}
+          value={stats?.totalUsers?.toLocaleString() || '0'}
           icon={UsersIcon}
-          color="text-blue-500"
-        />
-        <StatCard
-          title="Total Projects"
-          value={stats?.totalProjects || 0}
-          icon={BriefcaseIcon}
-          color="text-green-500"
-        />
-        <StatCard
-          title="Total Orders"
-          value={stats?.totalOrders || 0}
-          icon={ClipboardDocumentListIcon}
-          color="text-purple-500"
+          change="+12%"
+          changeType="increase"
         />
         <StatCard
           title="Active Projects"
-          value={stats?.activeProjects || 0}
-          icon={ClockIcon}
-          color="text-yellow-500"
+          value={stats?.activeProjects?.toLocaleString() || '0'}
+          icon={BriefcaseIcon}
+          change="+8%"
+          changeType="increase"
+        />
+        <StatCard
+          title="Total Orders"
+          value={stats?.totalOrders?.toLocaleString() || '0'}
+          icon={ClipboardDocumentListIcon}
+          change="+23%"
+          changeType="increase"
         />
         <StatCard
           title="Active Orders"
-          value={stats?.activeOrders || 0}
+          value={stats?.activeOrders?.toLocaleString() || '0'}
           icon={ClockIcon}
-          color="text-orange-500"
+          change="+5%"
+          changeType="increase"
         />
         <StatCard
-          title="Total Revenue"
-          value={`$${stats?.totalRevenue?.toLocaleString() || 0}`}
+          title="Total Projects"
+          value={stats?.totalProjects?.toLocaleString() || '0'}
+          icon={BriefcaseIcon}
+          change="+15%"
+          changeType="increase"
+        />
+        <StatCard
+          title="Revenue"
+          value={`$${stats?.totalRevenue?.toLocaleString() || '0'}`}
           icon={CurrencyDollarIcon}
-          color="text-green-600"
+          change="+18%"
+          changeType="increase"
         />
       </div>
 
-      {/* Recent Activity */}
-      <div className="mt-8">
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-              Quick Actions
-            </h3>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="bg-indigo-50 hover:bg-indigo-100 p-4 rounded-lg text-left transition-colors cursor-pointer">
-                <div className="text-sm font-medium text-indigo-900">View All Users</div>
-                <div className="text-xs text-indigo-600 mt-1">Manage user accounts</div>
-              </div>
-              <div className="bg-green-50 hover:bg-green-100 p-4 rounded-lg text-left transition-colors cursor-pointer">
-                <div className="text-sm font-medium text-green-900">Active Projects</div>
-                <div className="text-xs text-green-600 mt-1">Monitor ongoing work</div>
-              </div>
-              <div className="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg text-left transition-colors cursor-pointer">
-                <div className="text-sm font-medium text-purple-900">Recent Orders</div>
-                <div className="text-xs text-purple-600 mt-1">Track order status</div>
-              </div>
-              <div className="bg-yellow-50 hover:bg-yellow-100 p-4 rounded-lg text-left transition-colors cursor-pointer">
-                <div className="text-sm font-medium text-yellow-900">System Settings</div>
-                <div className="text-xs text-yellow-600 mt-1">Configure platform</div>
-              </div>
+      {/* Quick Actions */}
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <h2 className="text-lg font-semibold text-slate-900 mb-6">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button className="group p-6 border border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all duration-200 text-left">
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
+              <UsersIcon className="h-5 w-5 text-blue-600" />
             </div>
+            <h3 className="font-medium text-slate-900 mb-1">Manage Users</h3>
+            <p className="text-sm text-slate-600">View and manage all platform users</p>
+          </button>
+
+          <button className="group p-6 border border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all duration-200 text-left">
+            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
+              <BriefcaseIcon className="h-5 w-5 text-green-600" />
+            </div>
+            <h3 className="font-medium text-slate-900 mb-1">View Projects</h3>
+            <p className="text-sm text-slate-600">Monitor active and completed projects</p>
+          </button>
+
+          <button className="group p-6 border border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all duration-200 text-left">
+            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-200 transition-colors">
+              <ClipboardDocumentListIcon className="h-5 w-5 text-purple-600" />
+            </div>
+            <h3 className="font-medium text-slate-900 mb-1">Manage Orders</h3>
+            <p className="text-sm text-slate-600">Track and process customer orders</p>
+          </button>
+
+          <button className="group p-6 border border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all duration-200 text-left">
+            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
+              <CheckCircleIcon className="h-5 w-5 text-orange-600" />
+            </div>
+            <h3 className="font-medium text-slate-900 mb-1">System Settings</h3>
+            <p className="text-sm text-slate-600">Configure platform settings</p>
+          </button>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        <h2 className="text-lg font-semibold text-slate-900 mb-6">Recent Activity</h2>
+        <div className="space-y-4">
+          <div className="flex items-center p-4 bg-slate-50 rounded-lg">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-4"></div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-slate-900">New user registered</p>
+              <p className="text-xs text-slate-600">john.doe@example.com joined the platform</p>
+            </div>
+            <span className="text-xs text-slate-500">2 min ago</span>
+          </div>
+
+          <div className="flex items-center p-4 bg-slate-50 rounded-lg">
+            <div className="w-2 h-2 bg-blue-500 rounded-full mr-4"></div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-slate-900">Project completed</p>
+              <p className="text-xs text-slate-600">Website redesign project was marked as complete</p>
+            </div>
+            <span className="text-xs text-slate-500">1 hour ago</span>
+          </div>
+
+          <div className="flex items-center p-4 bg-slate-50 rounded-lg">
+            <div className="w-2 h-2 bg-purple-500 rounded-full mr-4"></div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-slate-900">New order received</p>
+              <p className="text-xs text-slate-600">Mobile app development order for $2,500</p>
+            </div>
+            <span className="text-xs text-slate-500">3 hours ago</span>
           </div>
         </div>
       </div>
