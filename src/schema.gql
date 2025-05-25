@@ -1,0 +1,274 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthResponse {
+  accessToken: String!
+  user: User!
+}
+
+input CreateOrderInput {
+  projectId: String!
+  requirements: String
+}
+
+input CreateProjectInput {
+  description: String!
+  price: Float!
+  tags: [String!]! = []
+  title: String!
+}
+
+type DashboardStats {
+  activeOrders: Int!
+  activeProjects: Int!
+  completedOrders: Int!
+  totalOrders: Int!
+  totalProjects: Int!
+  totalRevenue: Float!
+  totalUsers: Int!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  acceptOrder(id: String!): Order!
+  cancelOrder(id: String!): Order!
+  completeOrder(id: String!): Order!
+  createOrder(createOrderInput: CreateOrderInput!): Order!
+  createProject(createProjectInput: CreateProjectInput!): Project!
+  deleteProject(id: String!): Project!
+  login(loginInput: LoginInput!): AuthResponse!
+  markNotificationAsRead(id: String!): Notification!
+  publishProject(id: String!): Project!
+  register(registerInput: RegisterInput!): AuthResponse!
+  requestRevision(id: String!): Order!
+  resendVerificationCode(resendVerificationInput: ResendVerificationInput!): ResendVerificationResponse!
+  startOrder(id: String!): Order!
+  updateOrder(updateOrderInput: UpdateOrderInput!): Order!
+  updateProject(updateProjectInput: UpdateProjectInput!): Project!
+  updateSystemStats: Boolean!
+  verifyEmail(verifyEmailInput: VerifyEmailInput!): VerificationResponse!
+}
+
+type Notification {
+  content: String!
+  createdAt: DateTime!
+  id: ID!
+  isRead: Boolean!
+  receiver: User!
+  receiverId: String!
+  sender: User!
+  senderId: String!
+  type: NotificationType!
+}
+
+"""Type of notification"""
+enum NotificationType {
+  """Notification for when a message is received"""
+  MESSAGE_RECEIVED
+
+  """Notification for when an order is accepted"""
+  ORDER_ACCEPTED
+
+  """Notification for when an order is cancelled"""
+  ORDER_CANCELLED
+
+  """Notification for when an order is completed"""
+  ORDER_COMPLETED
+
+  """Notification for when an order is placed"""
+  ORDER_PLACED
+
+  """Notification for when payment is received"""
+  PAYMENT_RECEIVED
+
+  """Notification for when a review is received"""
+  REVIEW_RECEIVED
+}
+
+type Order {
+  client: User!
+  clientId: String!
+  createdAt: DateTime!
+  deliveryDate: DateTime
+  id: ID!
+  project: Project!
+  projectId: String!
+  requirements: String
+  status: OrderStatus!
+  totalAmount: Float!
+  updatedAt: DateTime!
+}
+
+"""Status of an order"""
+enum OrderStatus {
+  """Order has been accepted by freelancer"""
+  ACCEPTED
+
+  """Order has been cancelled"""
+  CANCELLED
+
+  """Order has been completed"""
+  COMPLETED
+
+  """Order is in dispute"""
+  DISPUTED
+
+  """Order is currently being worked on"""
+  IN_PROGRESS
+
+  """Order is pending acceptance"""
+  PENDING
+
+  """Order requires revision"""
+  REVISION
+}
+
+type PaginatedOrders {
+  orders: [Order!]!
+  total: Int!
+}
+
+type PaginatedProjects {
+  projects: [Project!]!
+  total: Int!
+}
+
+type PaginatedUsers {
+  total: Int!
+  users: [User!]!
+}
+
+type Project {
+  createdAt: DateTime!
+  description: String!
+  freelancer: User!
+  freelancerId: String!
+  id: ID!
+  price: Float!
+  status: ProjectStatus!
+  tags: [String!]!
+  title: String!
+  updatedAt: DateTime!
+}
+
+"""Status of a project"""
+enum ProjectStatus {
+  """Project has been cancelled"""
+  CANCELLED
+
+  """Project has been completed"""
+  COMPLETED
+
+  """Project is in draft state"""
+  DRAFT
+
+  """Project is published and available for bidding"""
+  PUBLISHED
+}
+
+type Query {
+  adminActiveProjects(skip: Int! = 0, take: Int! = 10): PaginatedProjects!
+  adminDashboardStats: DashboardStats!
+  adminRecentOrders(skip: Int! = 0, take: Int! = 10): PaginatedOrders!
+  adminUsers(skip: Int! = 0, take: Int! = 10): PaginatedUsers!
+  healthCheck: String!
+  myNotifications: [Notification!]!
+  myOrders: [Order!]!
+  myProjects: [Project!]!
+  order(id: String!): Order!
+  project(id: String!): Project!
+  projects: [Project!]!
+  receivedOrders: [Order!]!
+  user(id: ID!): User
+  users: [User!]!
+}
+
+input RegisterInput {
+  bio: String
+  email: String!
+  firstName: String!
+  hourlyRate: Float
+  lastName: String!
+  password: String!
+  profilePicture: String
+  role: UserRole!
+  skills: [String!]! = []
+}
+
+input ResendVerificationInput {
+  email: String!
+}
+
+type ResendVerificationResponse {
+  message: String!
+}
+
+type Subscription {
+  dashboardStatsUpdated: DashboardStats!
+  orderUpdates: String!
+  projectUpdates: String!
+  userActivity: String!
+}
+
+input UpdateOrderInput {
+  deliveryDate: DateTime
+  id: ID!
+  requirements: String
+  status: OrderStatus
+}
+
+input UpdateProjectInput {
+  description: String
+  id: ID!
+  price: Float
+  status: ProjectStatus
+  tags: [String!]
+  title: String
+}
+
+type User {
+  bio: String
+  createdAt: DateTime!
+  email: String!
+  firstName: String!
+  hourlyRate: Float
+  id: ID!
+  isVerified: Boolean!
+  lastName: String!
+  profilePicture: String
+  role: UserRole!
+  skills: [String!]!
+  updatedAt: DateTime!
+}
+
+"""User role in the system"""
+enum UserRole {
+  """Administrator with full system access"""
+  ADMIN
+
+  """Client who can post projects and hire freelancers"""
+  CLIENT
+
+  """Freelancer who can work on projects"""
+  FREELANCER
+}
+
+type VerificationResponse {
+  message: String!
+  user: User
+}
+
+input VerifyEmailInput {
+  email: String!
+  verificationCode: String!
+}
