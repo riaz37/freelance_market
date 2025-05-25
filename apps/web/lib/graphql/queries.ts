@@ -117,3 +117,36 @@ export const LOGIN_MUTATION = gql`
     }
   }
 `;
+
+// Real-time Subscriptions
+export const DASHBOARD_STATS_SUBSCRIPTION = gql`
+  subscription DashboardStatsUpdated {
+    dashboardStatsUpdated {
+      totalUsers
+      totalProjects
+      totalOrders
+      activeProjects
+      activeOrders
+      completedOrders
+      totalRevenue
+    }
+  }
+`;
+
+export const USER_ACTIVITY_SUBSCRIPTION = gql`
+  subscription UserActivity {
+    userActivity
+  }
+`;
+
+export const PROJECT_UPDATES_SUBSCRIPTION = gql`
+  subscription ProjectUpdates {
+    projectUpdates
+  }
+`;
+
+export const ORDER_UPDATES_SUBSCRIPTION = gql`
+  subscription OrderUpdates {
+    orderUpdates
+  }
+`;

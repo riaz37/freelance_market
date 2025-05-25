@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import { useQuery } from '@apollo/client';
-import { GET_DASHBOARD_STATS, HEALTH_CHECK } from '../lib/graphql/queries';
+import React, { useEffect } from 'react';
+import { useQuery, useSubscription } from '@apollo/client';
+import { GET_DASHBOARD_STATS, HEALTH_CHECK, DASHBOARD_STATS_SUBSCRIPTION, USER_ACTIVITY_SUBSCRIPTION } from '../lib/graphql/queries';
 import {
   UsersIcon,
   BriefcaseIcon,
@@ -60,8 +60,20 @@ const StatCard: React.FC<StatCardProps> = ({
 );
 
 const Dashboard: React.FC = () => {
-  const { data: statsData, loading: statsLoading, error: statsError } = useQuery(GET_DASHBOARD_STATS);
-  const { data: healthData, loading: healthLoading } = useQuery(HEALTH_CHECK);
+  const { data: statsData, loading: statsLoading, error: statsError } = useQuery(GET_DASHBOARD_STATS, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const { data: healthData, loading: healthLoading } = useQuery(HEALTH_CHECK, {
+    fetchPolicy: 'cache-and-network',
+    pollInterval: 30000, // Poll every 30 seconds
+  });
+
+  // Real-time subscriptions
+  const { data: statsSubscriptionData } = useSubscription(DASHBOARD_STATS_SUBSCRIPTION);
+  const { data: userActivityData } = useSubscription(USER_ACTIVITY_SUBSCRIPTION);
+
+  // Use subscription data if available, otherwise fall back to query data
+  const currentStats = statsSubscriptionData?.dashboardStatsUpdated || statsData?.adminDashboardStats;
 
   if (statsLoading) {
     return (
@@ -85,7 +97,7 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  const stats = statsData?.adminDashboardStats;
+  const stats = currentStats;
 
   return (
     <div className="space-y-8">

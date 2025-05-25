@@ -27,7 +27,16 @@ import { AppResolver } from './app.resolver';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: true,
-      context: ({ req }) => ({ req }),
+      context: ({ req, connection }) => {
+        if (connection) {
+          return { req: connection.context };
+        }
+        return { req };
+      },
+      subscriptions: {
+        'graphql-ws': true,
+        'subscriptions-transport-ws': true,
+      },
       debug: true,
       introspection: true,
       definitions: {

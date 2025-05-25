@@ -203,6 +203,13 @@ input RegisterInput {
   skills: [String!]! = []
 }
 
+type Subscription {
+  dashboardStatsUpdated: DashboardStats!
+  orderUpdates: String!
+  projectUpdates: String!
+  userActivity: String!
+}
+
 input UpdateOrderInput {
   deliveryDate: DateTime
   id: ID!

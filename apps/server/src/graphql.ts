@@ -217,6 +217,16 @@ export abstract class IQuery {
     abstract users(): User[] | Promise<User[]>;
 }
 
+export abstract class ISubscription {
+    abstract dashboardStatsUpdated(): DashboardStats | Promise<DashboardStats>;
+
+    abstract orderUpdates(): string | Promise<string>;
+
+    abstract projectUpdates(): string | Promise<string>;
+
+    abstract userActivity(): string | Promise<string>;
+}
+
 export class User {
     bio?: Nullable<string>;
     createdAt: DateTime;
