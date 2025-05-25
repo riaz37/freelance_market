@@ -150,3 +150,31 @@ export const ORDER_UPDATES_SUBSCRIPTION = gql`
     orderUpdates
   }
 `;
+
+// Recent Activity Query
+export const GET_RECENT_ACTIVITY = gql`
+  query GetRecentActivity {
+    myNotifications(skip: 0, take: 10) {
+      notifications {
+        id
+        type
+        content
+        isRead
+        createdAt
+        sender {
+          firstName
+          lastName
+          email
+        }
+      }
+      total
+    }
+  }
+`;
+
+// Recent Activity Subscription
+export const RECENT_ACTIVITY_SUBSCRIPTION = gql`
+  subscription RecentActivity {
+    userActivity
+  }
+`;

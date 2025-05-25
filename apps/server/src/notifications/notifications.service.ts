@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, Inject } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationType } from '@repo/shared-types';
 import { KafkaService } from '../kafka/kafka.service';
@@ -8,6 +8,7 @@ export class NotificationsService implements OnModuleInit {
   constructor(
     private prisma: PrismaService,
     private kafkaService: KafkaService,
+    @Inject('PUB_SUB') private pubSub: any,
   ) {}
 
   async onModuleInit() {
@@ -64,14 +65,25 @@ export class NotificationsService implements OnModuleInit {
     senderId: string,
     content: string,
   ) {
-    return this.prisma.notification.create({
+    const notification = await this.prisma.notification.create({
       data: {
         type,
         content,
         receiverId,
         senderId,
       },
+      include: {
+        sender: true,
+        receiver: true,
+      },
     });
+
+    // Publish real-time activity update
+    await this.pubSub.publish('userActivity', {
+      userActivity: `${type}: ${content}`,
+    });
+
+    return notification;
   }
 
   async sendOrderEvent(type: string, payload: any) {

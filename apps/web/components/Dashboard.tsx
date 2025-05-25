@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useQuery, useSubscription } from '@apollo/client';
-import { GET_DASHBOARD_STATS, HEALTH_CHECK, DASHBOARD_STATS_SUBSCRIPTION, USER_ACTIVITY_SUBSCRIPTION } from '../lib/graphql/queries';
+import { GET_DASHBOARD_STATS, HEALTH_CHECK, DASHBOARD_STATS_SUBSCRIPTION, USER_ACTIVITY_SUBSCRIPTION, GET_RECENT_ACTIVITY, RECENT_ACTIVITY_SUBSCRIPTION } from '../lib/graphql/queries';
 import {
   UsersIcon,
   BriefcaseIcon,
@@ -21,6 +21,19 @@ interface StatCardProps {
   change?: string;
   changeType?: 'increase' | 'decrease';
   description?: string;
+}
+
+interface Activity {
+  id: string;
+  type: string;
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+  sender: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
 }
 
 const StatCard: React.FC<StatCardProps> = ({
@@ -59,6 +72,44 @@ const StatCard: React.FC<StatCardProps> = ({
   </div>
 );
 
+// Helper functions for activity formatting
+const getActivityColor = (type: string) => {
+  switch (type) {
+    case 'ORDER_PLACED': return 'bg-blue-500';
+    case 'ORDER_ACCEPTED': return 'bg-green-500';
+    case 'ORDER_COMPLETED': return 'bg-purple-500';
+    case 'ORDER_CANCELLED': return 'bg-red-500';
+    case 'MESSAGE_RECEIVED': return 'bg-yellow-500';
+    case 'PAYMENT_RECEIVED': return 'bg-green-600';
+    case 'REVIEW_RECEIVED': return 'bg-orange-500';
+    default: return 'bg-slate-500';
+  }
+};
+
+const getActivityTitle = (type: string) => {
+  switch (type) {
+    case 'ORDER_PLACED': return 'New Order Placed';
+    case 'ORDER_ACCEPTED': return 'Order Accepted';
+    case 'ORDER_COMPLETED': return 'Order Completed';
+    case 'ORDER_CANCELLED': return 'Order Cancelled';
+    case 'MESSAGE_RECEIVED': return 'New Message';
+    case 'PAYMENT_RECEIVED': return 'Payment Received';
+    case 'REVIEW_RECEIVED': return 'New Review';
+    default: return 'Activity';
+  }
+};
+
+const formatTimeAgo = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return 'Just now';
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} min ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hour${Math.floor(diffInSeconds / 3600) > 1 ? 's' : ''} ago`;
+  return `${Math.floor(diffInSeconds / 86400)} day${Math.floor(diffInSeconds / 86400) > 1 ? 's' : ''} ago`;
+};
+
 const Dashboard: React.FC = () => {
   const { data: statsData, loading: statsLoading, error: statsError } = useQuery(GET_DASHBOARD_STATS, {
     fetchPolicy: 'cache-and-network',
@@ -72,8 +123,15 @@ const Dashboard: React.FC = () => {
   const { data: statsSubscriptionData } = useSubscription(DASHBOARD_STATS_SUBSCRIPTION);
   const { data: userActivityData } = useSubscription(USER_ACTIVITY_SUBSCRIPTION);
 
+  // Recent activity data
+  const { data: activityData, loading: activityLoading } = useQuery(GET_RECENT_ACTIVITY, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const { data: activitySubscriptionData } = useSubscription(RECENT_ACTIVITY_SUBSCRIPTION);
+
   // Use subscription data if available, otherwise fall back to query data
   const currentStats = statsSubscriptionData?.dashboardStatsUpdated || statsData?.adminDashboardStats;
+  const recentActivities = activityData?.myNotifications?.notifications || [];
 
   if (statsLoading) {
     return (
@@ -210,34 +268,36 @@ const Dashboard: React.FC = () => {
 
       {/* Recent Activity */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <h2 className="text-lg font-semibold text-slate-900 mb-6">Recent Activity</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-semibold text-slate-900">Recent Activity</h2>
+          {activitySubscriptionData && (
+            <div className="flex items-center text-green-600">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+              <span className="text-xs font-medium">Live</span>
+            </div>
+          )}
+        </div>
         <div className="space-y-4">
-          <div className="flex items-center p-4 bg-slate-50 rounded-lg">
-            <div className="w-2 h-2 bg-green-500 rounded-full mr-4"></div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-slate-900">New user registered</p>
-              <p className="text-xs text-slate-600">john.doe@example.com joined the platform</p>
+          {activityLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="w-6 h-6 border-2 border-slate-300 border-t-slate-900 rounded-full animate-spin"></div>
             </div>
-            <span className="text-xs text-slate-500">2 min ago</span>
-          </div>
-
-          <div className="flex items-center p-4 bg-slate-50 rounded-lg">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mr-4"></div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-slate-900">Project completed</p>
-              <p className="text-xs text-slate-600">Website redesign project was marked as complete</p>
+          ) : recentActivities.length > 0 ? (
+            recentActivities.map((activity: Activity) => (
+              <div key={activity.id} className="flex items-center p-4 bg-slate-50 rounded-lg">
+                <div className={`w-2 h-2 rounded-full mr-4 ${getActivityColor(activity.type)}`}></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-900">{getActivityTitle(activity.type)}</p>
+                  <p className="text-xs text-slate-600">{activity.content}</p>
+                </div>
+                <span className="text-xs text-slate-500">{formatTimeAgo(activity.createdAt)}</span>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-slate-500">No recent activity</p>
             </div>
-            <span className="text-xs text-slate-500">1 hour ago</span>
-          </div>
-
-          <div className="flex items-center p-4 bg-slate-50 rounded-lg">
-            <div className="w-2 h-2 bg-purple-500 rounded-full mr-4"></div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-slate-900">New order received</p>
-              <p className="text-xs text-slate-600">Mobile app development order for $2,500</p>
-            </div>
-            <span className="text-xs text-slate-500">3 hours ago</span>
-          </div>
+          )}
         </div>
       </div>
     </div>

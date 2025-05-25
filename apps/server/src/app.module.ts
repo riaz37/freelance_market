@@ -29,8 +29,10 @@ import { AppResolver } from './app.resolver';
       playground: true,
       context: ({ req, connection }) => {
         if (connection) {
+          // For subscriptions (WebSocket)
           return { req: connection.context };
         }
+        // For queries and mutations (HTTP)
         return { req };
       },
       subscriptions: {
