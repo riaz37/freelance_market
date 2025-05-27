@@ -34,7 +34,8 @@ COPY --from=deps /app/packages ./packages
 COPY . .
 
 # Generate Prisma client first (required for database package)
-RUN pnpm -C packages/database db:generate
+# Use the correct path for Prisma output
+RUN cd packages/database && npx prisma generate
 
 # Build shared packages
 RUN pnpm -C packages/shared-types build
@@ -69,7 +70,8 @@ RUN pnpm install --frozen-lockfile --prod
 COPY --from=builder --chown=nestjs:nodejs /app/apps/server/dist ./apps/server/dist
 COPY --from=builder --chown=nestjs:nodejs /app/packages/database/dist ./packages/database/dist
 COPY --from=builder --chown=nestjs:nodejs /app/packages/database/prisma ./packages/database/prisma
-COPY --from=builder --chown=nestjs:nodejs /app/packages/database/node_modules/.prisma ./packages/database/node_modules/.prisma
+# Copy the generated Prisma client to the correct location
+COPY --from=builder --chown=nestjs:nodejs /app/packages/database/src/generated ./packages/database/src/generated
 COPY --from=builder --chown=nestjs:nodejs /app/packages/shared-types/dist ./packages/shared-types/dist
 
 # Copy scripts
