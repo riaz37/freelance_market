@@ -4,8 +4,9 @@
   "private": true,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.d.ts",
   "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm",
     "db:generate": "dotenv -e ../../.env -- npx prisma generate",
     "db:push": "dotenv -e ../../.env -- npx prisma db push",
     "db:migrate": "dotenv -e ../../.env -- npx prisma migrate deploy",

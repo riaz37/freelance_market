@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './generated/prisma';
 
 // Singleton to prevent multiple instances in development
 let prismaClient: PrismaClient | undefined;
