@@ -19,11 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "generate:schema": "ts-node src/generate-schema.ts",
-    "seed:admin": "ts-node scripts/seed-admin.ts",
-    "deploy:build": "npm run build",
-    "deploy:migrate": "npx prisma migrate deploy",
-    "deploy:seed": "npm run seed:admin",
-    "deploy:start": "node dist/main"
+    "seed:admin": "ts-node scripts/seed-admin.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.12.1",

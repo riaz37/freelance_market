@@ -1,27 +1,20 @@
 'use client';
 
 import React from 'react';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { AuthGuard } from '@components/AuthGuard';
 
-const DashboardPage: React.FC = () => {
-  const { user, logout, isAuthenticated } = useAuth();
+// Disable static generation for this page since it requires authentication
+export const dynamic = 'force-dynamic';
+
+const DashboardContent: React.FC = () => {
+  const { user, logout } = useAuth();
   const router = useRouter();
 
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, router]);
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  // Since this is wrapped in AuthGuard, user will never be null
+  if (!user) return null;
 
   const handleLogout = () => {
     logout();
@@ -40,7 +33,7 @@ const DashboardPage: React.FC = () => {
               </div>
               <span className="ml-3 text-2xl font-bold text-gray-900">FreelanceMarket</span>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -237,19 +230,19 @@ const DashboardPage: React.FC = () => {
               <h3 className="font-medium text-gray-900">Messages</h3>
               <p className="text-sm text-gray-600">View conversations</p>
             </button>
-            
+
             <button className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow text-left">
               <span className="text-2xl mb-2 block">🔔</span>
               <h3 className="font-medium text-gray-900">Notifications</h3>
               <p className="text-sm text-gray-600">Check updates</p>
             </button>
-            
+
             <button className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow text-left">
               <span className="text-2xl mb-2 block">⚙️</span>
               <h3 className="font-medium text-gray-900">Settings</h3>
               <p className="text-sm text-gray-600">Account preferences</p>
             </button>
-            
+
             <button className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow text-left">
               <span className="text-2xl mb-2 block">❓</span>
               <h3 className="font-medium text-gray-900">Help</h3>
@@ -259,6 +252,14 @@ const DashboardPage: React.FC = () => {
         </div>
       </main>
     </div>
+  );
+};
+
+const DashboardPage: React.FC = () => {
+  return (
+    <AuthGuard requireAuth={true}>
+      <DashboardContent />
+    </AuthGuard>
   );
 };
 

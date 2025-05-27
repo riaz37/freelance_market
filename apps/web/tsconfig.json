@@ -19,7 +19,16 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@contexts/*": ["./src/contexts/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@validation": ["./src/lib/validation/index.ts"],
+      "@validation/*": ["./src/lib/validation/*"],
+      "@graphql": ["./src/lib/graphql/queries.ts"],
+      "@graphql/*": ["./src/lib/graphql/*"],
+      "@types/*": ["./src/types/*"],
+      "@app/*": ["./src/app/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

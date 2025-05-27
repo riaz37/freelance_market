@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { VERIFY_EMAIL_MUTATION, RESEND_VERIFICATION_MUTATION } from '../lib/graphql/queries';
+import { VERIFY_EMAIL_MUTATION, RESEND_VERIFICATION_MUTATION } from '@graphql';
 import { EnvelopeIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { emailVerificationSchema, validateFormData } from '@validation';
 
 interface EmailVerificationProps {
   email: string;
@@ -24,8 +25,12 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ email, onVerifica
     setError('');
     setMessage('');
 
-    if (verificationCode.length !== 6) {
-      setError('Please enter a 6-digit verification code');
+    // Validate using Zod schema
+    const result = validateFormData(emailVerificationSchema, { verificationCode });
+
+    if (!result.success) {
+      const errorMessage = Object.values(result.errors)[0] || 'Please enter a valid verification code';
+      setError(errorMessage);
       return;
     }
 
@@ -41,7 +46,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ email, onVerifica
 
       setMessage(data.verifyEmail.message);
       setIsVerified(true);
-      
+
       if (onVerificationSuccess) {
         onVerificationSuccess();
       }

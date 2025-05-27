@@ -1,6 +1,9 @@
 import React from 'react';
-import AuthLayout from '../../../components/auth/AuthLayout';
-import PublicLoginForm from '../../../components/auth/PublicLoginForm';
+import AuthLayout from '@components/auth/AuthLayout';
+import PublicLoginForm from '@components/auth/PublicLoginForm';
+
+// Disable static generation since this page uses auth context
+export const dynamic = 'force-dynamic';
 
 const PublicLoginPage: React.FC = () => {
   return (

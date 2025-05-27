@@ -1,29 +1,57 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
+import { loginSchema, validateFormData } from '@validation';
 
 const LoginForm: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
+  const validateForm = () => {
+    const result = validateFormData(loginSchema, formData);
+
+    if (!result.success) {
+      setErrors(result.errors);
+      return false;
+    }
+
+    setErrors({});
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+
+    if (!validateForm()) return;
+
     setLoading(true);
+    setErrors({});
 
     try {
-      const success = await login(email, password, true); // Admin-only for this form
+      const success = await login(formData.email, formData.password, true); // Admin-only for this form
       if (!success) {
-        setError('Invalid credentials or insufficient privileges');
+        setErrors({ general: 'Invalid credentials or insufficient privileges' });
       }
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+      setErrors({ general: err.message || 'Login failed. Please try again.' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -45,6 +73,12 @@ const LoginForm: React.FC = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {errors.general && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-red-700 text-sm">{errors.general}</p>
+            </div>
+          )}
+
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
               Email
@@ -54,12 +88,16 @@ const LoginForm: React.FC = () => {
               name="email"
               type="email"
               autoComplete="email"
-              required
-              className="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all duration-200 text-slate-900 placeholder-slate-400"
+              className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all duration-200 text-slate-900 placeholder-slate-400 ${
+                errors.email ? 'border-red-300 bg-red-50' : 'border-slate-200'
+              }`}
               placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
             />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+            )}
           </div>
 
           <div>
@@ -71,19 +109,17 @@ const LoginForm: React.FC = () => {
               name="password"
               type="password"
               autoComplete="current-password"
-              required
-              className="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all duration-200 text-slate-900 placeholder-slate-400"
+              className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all duration-200 text-slate-900 placeholder-slate-400 ${
+                errors.password ? 'border-red-300 bg-red-50' : 'border-slate-200'
+              }`}
               placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange}
             />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+            )}
           </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-700 text-sm">{error}</p>
-            </div>
-          )}
 
           <button
             type="submit"

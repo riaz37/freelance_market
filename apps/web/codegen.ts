@@ -5,12 +5,12 @@ const config: CodegenConfig = {
   schema: 'http://localhost:5000/graphql',
 
   // Documents pattern - where your GraphQL queries/mutations are located
-  documents: ['lib/graphql/**/*.ts', 'components/**/*.tsx', 'contexts/**/*.tsx'],
+  documents: ['src/lib/graphql/**/*.ts', 'src/components/**/*.tsx', 'src/contexts/**/*.tsx'],
 
   // Generate TypeScript types and React Apollo hooks
   generates: {
     // Generate TypeScript types for the schema
-    'lib/graphql/generated/types.ts': {
+    'src/lib/graphql/generated/types.ts': {
       plugins: [
         'typescript',
         'typescript-operations',
@@ -29,7 +29,7 @@ const config: CodegenConfig = {
     },
 
     // Generate React Apollo hooks
-    'lib/graphql/generated/hooks.ts': {
+    'src/lib/graphql/generated/hooks.ts': {
       plugins: [
         'typescript',
         'typescript-operations',
@@ -49,7 +49,7 @@ const config: CodegenConfig = {
     },
 
     // Generate introspection result for Apollo Client
-    'lib/graphql/generated/introspection.json': {
+    'src/lib/graphql/generated/introspection.json': {
       plugins: ['introspection'],
     },
   },

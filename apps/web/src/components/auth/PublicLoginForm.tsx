@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
+import { loginSchema, type LoginFormData, validateFormData } from '@validation';
 
 const PublicLoginForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -20,27 +21,20 @@ const PublicLoginForm: React.FC = () => {
   const { login } = useAuth();
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+    const result = validateFormData(loginSchema, formData);
 
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+    if (!result.success) {
+      setErrors(result.errors);
+      return false;
     }
 
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors({});
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setLoading(true);
@@ -53,8 +47,8 @@ const PublicLoginForm: React.FC = () => {
         router.push('/dashboard');
       }
     } catch (error: any) {
-      setErrors({ 
-        general: error.message || 'Login failed. Please check your credentials.' 
+      setErrors({
+        general: error.message || 'Login failed. Please check your credentials.'
       });
     } finally {
       setLoading(false);
@@ -64,7 +58,7 @@ const PublicLoginForm: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));

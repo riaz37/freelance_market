@@ -4,7 +4,13 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
+import {
+  registerStep1Schema,
+  registerStep2Schema,
+  type RegisterFormData,
+  validateFormData
+} from '@validation';
 
 const PublicRegisterForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -28,53 +34,27 @@ const PublicRegisterForm: React.FC = () => {
   const { register } = useAuth();
 
   const validateStep1 = () => {
-    const newErrors: Record<string, string> = {};
+    const result = validateFormData(registerStep1Schema, formData);
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
+    if (!result.success) {
+      setErrors(result.errors);
+      return false;
     }
 
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
-
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors({});
+    return true;
   };
 
   const validateStep2 = () => {
-    const newErrors: Record<string, string> = {};
+    const result = validateFormData(registerStep2Schema, formData);
 
-    if (formData.role === 'FREELANCER') {
-      if (!formData.bio.trim()) {
-        newErrors.bio = 'Bio is required for freelancers';
-      }
-      if (!formData.skills.trim()) {
-        newErrors.skills = 'Skills are required for freelancers';
-      }
-      if (!formData.hourlyRate || parseFloat(formData.hourlyRate) <= 0) {
-        newErrors.hourlyRate = 'Valid hourly rate is required for freelancers';
-      }
+    if (!result.success) {
+      setErrors(result.errors);
+      return false;
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors({});
+    return true;
   };
 
   const handleNext = () => {
@@ -85,7 +65,7 @@ const PublicRegisterForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateStep2()) return;
 
     setLoading(true);
@@ -93,7 +73,7 @@ const PublicRegisterForm: React.FC = () => {
 
     try {
       const skillsArray = formData.skills ? formData.skills.split(',').map(s => s.trim()) : [];
-      
+
       const success = await register({
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -109,8 +89,8 @@ const PublicRegisterForm: React.FC = () => {
         router.push('/auth/verify-email');
       }
     } catch (error: any) {
-      setErrors({ 
-        general: error.message || 'Registration failed. Please try again.' 
+      setErrors({
+        general: error.message || 'Registration failed. Please try again.'
       });
     } finally {
       setLoading(false);
@@ -120,7 +100,7 @@ const PublicRegisterForm: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));

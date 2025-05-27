@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_ADMIN_USERS } from '../lib/graphql/queries';
+import { GET_ADMIN_USERS } from '@graphql';
 import { UserRole } from '@repo/shared-types';
 import {
   MagnifyingGlassIcon,

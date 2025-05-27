@@ -1,29 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ApolloProvider } from '@apollo/client';
-import { AuthProvider, useAuth } from '../../../contexts/AuthContext';
-import client from '../../../lib/apollo-client';
-import LoginForm from '../../../components/LoginForm';
-import Layout from '../../../components/Layout';
-import Dashboard from '../../../components/Dashboard';
-import UsersManagement from '../../../components/UsersManagement';
+import { useAuth } from '@contexts/AuthContext';
+import LoginForm from '@components/LoginForm';
+import Layout from '@components/Layout';
+import Dashboard from '@components/Dashboard';
+import UsersManagement from '@components/UsersManagement';
+import { AuthGuard } from '@components/AuthGuard';
 
-const AdminApp: React.FC = () => {
-  const { user, loading } = useAuth();
+// Disable static generation for this page since it requires authentication
+export const dynamic = 'force-dynamic';
+
+const AdminContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <LoginForm />;
-  }
 
   const renderPage = () => {
     switch (currentPage) {
@@ -49,12 +38,12 @@ const AdminApp: React.FC = () => {
   );
 };
 
-export default function AdminPage() {
+const AdminPage: React.FC = () => {
   return (
-    <ApolloProvider client={client}>
-      <AuthProvider>
-        <AdminApp />
-      </AuthProvider>
-    </ApolloProvider>
+    <AuthGuard requireAuth={true} adminOnly={true}>
+      <AdminContent />
+    </AuthGuard>
   );
-}
+};
+
+export default AdminPage;

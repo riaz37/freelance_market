@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useQuery, useSubscription } from '@apollo/client';
-import { GET_DASHBOARD_STATS, HEALTH_CHECK, DASHBOARD_STATS_SUBSCRIPTION, USER_ACTIVITY_SUBSCRIPTION, GET_RECENT_ACTIVITY, RECENT_ACTIVITY_SUBSCRIPTION } from '../lib/graphql/queries';
+import { GET_DASHBOARD_STATS, HEALTH_CHECK, DASHBOARD_STATS_SUBSCRIPTION, USER_ACTIVITY_SUBSCRIPTION, GET_RECENT_ACTIVITY, RECENT_ACTIVITY_SUBSCRIPTION } from '@graphql';
 import {
   UsersIcon,
   BriefcaseIcon,

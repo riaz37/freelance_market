@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
-import { LOGIN_MUTATION, REGISTER_MUTATION } from '../lib/graphql/queries';
+import { LOGIN_MUTATION, REGISTER_MUTATION } from '@graphql';
 
 interface User {
   id: string;
