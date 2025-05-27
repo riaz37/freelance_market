@@ -20,7 +20,7 @@ import { AppResolver } from './app.resolver';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env', '../../.env'], // Try local .env first, then root as fallback
+      envFilePath: ['.env'],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

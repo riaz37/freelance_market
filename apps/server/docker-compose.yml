@@ -44,6 +44,24 @@ services:
     networks:
       - kafka-network
 
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: freelance_market
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - kafka-network
+
 networks:
   kafka-network:
     driver: bridge
+
+volumes:
+  postgres-data:
