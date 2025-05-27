@@ -126,7 +126,7 @@ cp .env.example .env
 # Edit .env with your configuration
 
 # 2. Deploy everything
-pnpm docker:prod
+pnpm docker:deploy
 ```
 
 #### Prerequisites for Manual Setup
@@ -224,13 +224,13 @@ pnpm docker:down:dev     # Stop development services
 pnpm docker:logs:dev     # View development logs
 ```
 
-### Production Commands
+### Deployment Commands
 ```bash
-pnpm docker:prod         # Full production deployment
-pnpm docker:build        # Build production images
+pnpm docker:deploy       # Full Docker deployment
+pnpm docker:build        # Build Docker images
 pnpm docker:build:rebuild # Clean rebuild
-pnpm docker:down         # Stop production services
-pnpm docker:logs         # View production logs
+pnpm docker:down         # Stop services
+pnpm docker:logs         # View logs
 ```
 
 ### Docker Architecture
@@ -527,8 +527,8 @@ pnpm format                # Format code with Prettier
 
 # Docker commands
 pnpm docker:dev            # Start development infrastructure
-pnpm docker:prod           # Full production deployment
-pnpm docker:build          # Build production images
+pnpm docker:deploy         # Full Docker deployment
+pnpm docker:build          # Build Docker images
 pnpm docker:down           # Stop services
 pnpm docker:logs           # View logs
 ```

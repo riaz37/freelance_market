@@ -95,10 +95,10 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       PORT: 4000
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-freelance_market}
-      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-for-development}
       KAFKA_BROKER: kafka:29092
       EMAIL_HOST: ${EMAIL_HOST}
       EMAIL_PORT: ${EMAIL_PORT:-587}
@@ -129,7 +129,7 @@ services:
       server:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       NEXT_PUBLIC_GRAPHQL_URL: http://localhost:4000/graphql
       NEXT_PUBLIC_GRAPHQL_WS_URL: ws://localhost:4000/graphql
     ports:

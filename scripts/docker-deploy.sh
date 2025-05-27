@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Production Docker Deployment Script
+# Docker Deployment Script
 set -e
 
 # Colors for output
@@ -21,14 +21,13 @@ print_warning() {
     echo -e "${YELLOW}[WARNING]${NC} $1"
 }
 
-print_status "Deploying to production..."
+print_status "Deploying with Docker..."
 
 # Check if .env exists
 if [ ! -f .env ]; then
     print_warning "Creating .env from .env.example"
     cp .env.example .env
-    print_warning "Please update .env with production values!"
-    exit 1
+    print_warning "Please update .env with your configuration!"
 fi
 
 # Build and deploy
@@ -45,7 +44,7 @@ docker-compose -f docker-compose.yml exec server pnpm -C packages/database db:mi
 print_status "Seeding admin user..."
 docker-compose -f docker-compose.yml exec server pnpm -C apps/server seed:admin
 
-print_success "Production deployment completed!"
+print_success "Docker deployment completed!"
 print_status "Application is running at:"
 echo "  - Web: http://localhost:3000"
 echo "  - API: http://localhost:4000"

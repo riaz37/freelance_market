@@ -42,15 +42,15 @@ fi
 print_status "Starting Docker build process for Freelance Marketplace..."
 
 # Parse command line arguments
-BUILD_TYPE=${1:-"production"}
+BUILD_TYPE=${1:-"dev"}
 REBUILD=${2:-"false"}
 
 if [ "$BUILD_TYPE" = "dev" ] || [ "$BUILD_TYPE" = "development" ]; then
     COMPOSE_FILE="docker-compose.dev.yml"
-    print_status "Building for DEVELOPMENT environment"
+    print_status "Building for DEVELOPMENT environment (infrastructure only)"
 else
     COMPOSE_FILE="docker-compose.yml"
-    print_status "Building for PRODUCTION environment"
+    print_status "Building for DOCKER deployment (full stack)"
 fi
 
 # Clean up if rebuild is requested
@@ -89,7 +89,7 @@ else
     print_error "PostgreSQL is not ready"
 fi
 
-# Check if server is running (for production)
+# Check if server is running (for full Docker deployment)
 if [ "$BUILD_TYPE" != "dev" ] && [ "$BUILD_TYPE" != "development" ]; then
     sleep 20  # Give server more time to start
     if curl -f http://localhost:4000/health > /dev/null 2>&1; then
