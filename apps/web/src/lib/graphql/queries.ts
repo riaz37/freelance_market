@@ -113,6 +113,30 @@ export const LOGIN_MUTATION = gql`
         firstName
         lastName
         role
+        isVerified
+        bio
+        skills
+        hourlyRate
+      }
+    }
+  }
+`;
+
+// Register Mutation
+export const REGISTER_MUTATION = gql`
+  mutation Register($registerInput: RegisterInput!) {
+    register(registerInput: $registerInput) {
+      accessToken
+      user {
+        id
+        email
+        firstName
+        lastName
+        role
+        isVerified
+        bio
+        skills
+        hourlyRate
       }
     }
   }

@@ -17,6 +17,9 @@ importers:
       ts-morph:
         specifier: ^25.0.1
         version: 25.0.1
+      turbo:
+        specifier: ^2.5.3
+        version: 2.5.3
 
   apps/server:
     dependencies:

@@ -16,12 +16,12 @@ const LoginForm: React.FC = () => {
     setLoading(true);
 
     try {
-      const success = await login(email, password);
+      const success = await login(email, password, true); // Admin-only for this form
       if (!success) {
         setError('Invalid credentials or insufficient privileges');
       }
-    } catch (err) {
-      setError('Login failed. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
