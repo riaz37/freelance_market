@@ -14,6 +14,7 @@ import { OrdersModule } from './orders/orders.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { KafkaModule } from './kafka/kafka.module';
 import { AdminModule } from './admin/admin.module';
+import { HealthModule } from './health/health.module';
 import { AppResolver } from './app.resolver';
 
 @Module({
@@ -54,6 +55,7 @@ import { AppResolver } from './app.resolver';
     NotificationsModule,
     KafkaModule,
     AdminModule,
+    HealthModule,
   ],
   providers: [AppResolver],
 })

@@ -59,9 +59,9 @@ A modern, scalable freelance marketplace built with Next.js, NestJS, GraphQL, an
 
 ### Infrastructure
 - **Apache Kafka** - Event streaming platform
-- **Redis** (optional) - Caching and session storage
-- **Docker** (optional) - Containerization
-- **Neon** - Serverless PostgreSQL
+- **Docker** - Containerization with separate containers
+- **PostgreSQL** - Production-ready database
+- **Zookeeper** - Kafka coordination service
 
 ## 🏗 Architecture Overview
 
@@ -89,101 +89,160 @@ A modern, scalable freelance marketplace built with Next.js, NestJS, GraphQL, an
 ## 🚀 Setup Instructions
 
 ### Prerequisites
-- **Node.js** 18+ and npm/pnpm
-- **PostgreSQL** database (or Neon account)
-- **Apache Kafka** (optional, for event streaming)
+- **Node.js** 20+ and pnpm
+- **Docker & Docker Compose** (recommended)
 - **Git**
 
-### 1. Clone the Repository
+### Quick Start with Docker (Recommended)
+
+#### Option 1: Development with Docker Infrastructure
+```bash
+# 1. Clone and install
+git clone <repository-url>
+cd freelance_market
+pnpm install
+
+# 2. Start infrastructure (PostgreSQL, Kafka, etc.)
+pnpm docker:dev
+
+# 3. Set up environment
+cp .env.example apps/server/.env
+# Edit apps/server/.env with your configuration
+
+# 4. Run database migrations
+pnpm -C packages/database db:migrate
+
+# 5. Start applications locally
+pnpm -C apps/server dev    # Backend
+pnpm -C apps/web dev       # Frontend
+```
+
+#### Option 2: Full Docker Deployment
+```bash
+# 1. Clone and configure
+git clone <repository-url>
+cd freelance_market
+cp .env.example .env
+# Edit .env with your configuration
+
+# 2. Deploy everything
+pnpm docker:prod
+```
+
+#### Prerequisites for Manual Setup
+- **PostgreSQL** database running locally
+- **Apache Kafka** (optional, for event streaming)
+
+#### 1. Clone and Install
 ```bash
 git clone <repository-url>
 cd freelance_market
-```
-
-### 2. Install Dependencies
-```bash
-# Install all dependencies
 pnpm install
-
-# Or using npm
-npm install
 ```
 
-### 3. Environment Configuration
+#### 2. Environment Configuration
 
-#### Backend Environment (`apps/server/.env`)
+##### Backend Environment (`apps/server/.env`)
 ```env
 # Database
-DATABASE_URL="postgresql://username:password@host:port/database?sslmode=require"
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/freelance_market_dev
 
 # JWT
-JWT_SECRET="your-super-secret-jwt-key-for-development"
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
 
 # Server
-PORT=4000
 NODE_ENV=development
+PORT=4000
 
-# Kafka (Optional)
-KAFKA_BROKERS="localhost:9092"
-KAFKA_CLIENT_ID="freelance-market-service"
-KAFKA_GROUP_ID="freelance-market-group"
-
-# Admin User (for seeding)
-ADMIN_EMAIL="admin@example.com"
-ADMIN_PASSWORD="admin123"
+# Kafka Configuration
+KAFKA_BROKER=localhost:9092
+KAFKA_CLIENT_ID=freelance-market-service
+KAFKA_GROUP_ID=freelance-market-group
 
 # Email Configuration (Nodemailer)
-EMAIL_HOST="smtp.gmail.com"
+EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_SECURE=false
-EMAIL_USER="your-email@gmail.com"
-EMAIL_PASS="your-app-password"
-EMAIL_FROM="FreelanceMarket <noreply@freelancemarket.com>"
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+EMAIL_FROM=FreelanceMarket <noreply@freelancemarket.com>
+
+# Admin User (for seeding)
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=admin123
+
+# GraphQL Configuration
+GRAPHQL_PLAYGROUND=true
+GRAPHQL_INTROSPECTION=true
 ```
 
-#### Frontend Environment (`apps/web/.env.local`)
+##### Frontend Environment (`apps/web/.env.local`)
 ```env
 NEXT_PUBLIC_GRAPHQL_URL=http://localhost:4000/graphql
-NEXT_PUBLIC_WS_URL=ws://localhost:4000/graphql
+NEXT_PUBLIC_GRAPHQL_WS_URL=ws://localhost:4000/graphql
 ```
 
-### 4. Database Setup
+#### 3. Database Setup
 ```bash
-# Navigate to database package
-cd packages/database
-
 # Generate Prisma client
-npx prisma generate
+pnpm -C packages/database db:generate
 
 # Run database migrations
-npx prisma migrate dev
+pnpm -C packages/database db:migrate
 
 # Seed the database (optional)
-npx prisma db seed
+pnpm -C apps/server seed:admin
 ```
 
-### 5. Start the Development Servers
-
-#### Start Backend Server
+#### 4. Start Development Servers
 ```bash
-cd apps/server
-npm run build
-npm run start:prod
+# Start backend (Terminal 1)
+pnpm -C apps/server dev
 
-# Or for development with watch mode
-npm run dev
+# Start frontend (Terminal 2)
+pnpm -C apps/web dev
 ```
 
-#### Start Frontend Server
-```bash
-cd apps/web
-npm run dev
-```
+## 🌐 Application URLs
 
-### 6. Access the Application
+### Development
 - **Frontend**: http://localhost:3000
-- **GraphQL Playground**: http://localhost:4000/graphql
 - **Backend API**: http://localhost:4000
+- **GraphQL Playground**: http://localhost:4000/graphql
+- **Health Check**: http://localhost:4000/health
+
+### Docker Services
+- **Kafka UI**: http://localhost:8080
+- **PostgreSQL**: localhost:5432
+
+## 🐳 Docker Commands
+
+### Development Commands
+```bash
+pnpm docker:dev          # Start infrastructure only
+pnpm docker:down:dev     # Stop development services
+pnpm docker:logs:dev     # View development logs
+```
+
+### Production Commands
+```bash
+pnpm docker:prod         # Full production deployment
+pnpm docker:build        # Build production images
+pnpm docker:build:rebuild # Clean rebuild
+pnpm docker:down         # Stop production services
+pnpm docker:logs         # View production logs
+```
+
+### Docker Architecture
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │    Backend      │    │  Infrastructure │
+│   (Next.js)     │    │   (NestJS)      │    │                 │
+│   Port: 3000    │    │   Port: 4000    │    │  PostgreSQL     │
+│   Container     │    │   Container     │    │  Kafka          │
+│                 │    │                 │    │  Zookeeper      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
 
 ## 📦 Module Overview
 
@@ -207,18 +266,20 @@ npm run dev
 - **`graphql.ts`** - Generated GraphQL types
 - **`schema.gql`** - GraphQL schema definition
 
-### Frontend Structure (`apps/web/`)
+### Frontend Structure (`apps/web/src/`)
 
 #### Pages & Components
-- **`app/`** - Next.js App Router pages
-- **`components/`** - Reusable UI components
-- **`lib/`** - GraphQL queries, utilities, types
+- **`app/`** - Next.js App Router pages (login, register, dashboard, admin)
+- **`components/`** - Reusable UI components with auth components
+- **`contexts/`** - React contexts (AuthContext)
+- **`lib/`** - GraphQL queries, validation schemas, utilities
 
-#### Key Components
-- **`Dashboard.tsx`** - Real-time dashboard with live stats
-- **`EmailVerification.tsx`** - Email verification flow
-- **`AuthProvider.tsx`** - Authentication context
-- **`ApolloProvider.tsx`** - GraphQL client setup
+#### Key Features
+- **Custom @alias imports** - Clean import paths (`@components`, `@contexts`, `@validation`)
+- **Zod validation** - Type-safe form validation
+- **Real-time subscriptions** - Live dashboard updates
+- **Authentication flow** - Login, register, email verification
+- **Responsive design** - Tailwind CSS with modern UI
 
 ### Shared Packages (`packages/`)
 
@@ -458,46 +519,55 @@ query GetDashboardStats {
 
 #### Root Level
 ```bash
-pnpm dev          # Start all services
-pnpm build        # Build all packages
-pnpm test         # Run all tests
-pnpm lint         # Lint all packages
+pnpm dev                    # Start all services
+pnpm build                  # Build all packages
+pnpm lint                   # Lint all packages
+pnpm check-types           # TypeScript type checking
+pnpm format                # Format code with Prettier
+
+# Docker commands
+pnpm docker:dev            # Start development infrastructure
+pnpm docker:prod           # Full production deployment
+pnpm docker:build          # Build production images
+pnpm docker:down           # Stop services
+pnpm docker:logs           # View logs
 ```
 
 #### Backend (`apps/server/`)
 ```bash
-npm run build     # Build the application
-npm run start     # Start production server
-npm run dev       # Start development server
-npm run test      # Run tests
-npm run lint      # Run ESLint
+pnpm dev                   # Start development server
+pnpm build                 # Build the application
+pnpm start                 # Start production server
+pnpm test                  # Run tests
+pnpm lint                  # Run ESLint
+pnpm seed:admin           # Seed admin user
 ```
 
 #### Frontend (`apps/web/`)
 ```bash
-npm run dev       # Start development server
-npm run build     # Build for production
-npm run start     # Start production server
-npm run lint      # Run ESLint
-npm run type-check # Run TypeScript checks
+pnpm dev                   # Start development server
+pnpm build                 # Build for production
+pnpm start                 # Start production server
+pnpm lint                  # Run ESLint
+pnpm check-types          # TypeScript type checking
 ```
 
 ### Database Commands
 ```bash
 # Generate Prisma client
-npx prisma generate
+pnpm -C packages/database db:generate
 
 # Create migration
-npx prisma migrate dev --name migration-name
+pnpm -C packages/database db:migrate
 
 # Reset database
-npx prisma migrate reset
+pnpm -C packages/database db:reset
 
 # View database
-npx prisma studio
+pnpm -C packages/database db:studio
 
 # Seed database
-npx prisma db seed
+pnpm -C apps/server seed:admin
 ```
 
 ### GraphQL Development
@@ -526,6 +596,88 @@ npm run test:watch
 - **Frontend**: Next.js built-in debugging
 - **Database**: Prisma Studio for data inspection
 - **GraphQL**: GraphQL Playground for API testing
+
+## 📁 Project Structure
+
+```
+freelance_market/
+├── apps/
+│   ├── web/                    # Next.js Frontend
+│   │   ├── src/
+│   │   │   ├── app/           # App Router pages
+│   │   │   ├── components/    # React components
+│   │   │   ├── contexts/      # React contexts
+│   │   │   └── lib/           # Utilities & GraphQL
+│   │   ├── Dockerfile         # Frontend container
+│   │   └── package.json
+│   └── server/                # NestJS Backend
+│       ├── src/
+│       │   ├── auth/          # Authentication module
+│       │   ├── users/         # User management
+│       │   ├── projects/      # Project management
+│       │   ├── orders/        # Order system
+│       │   ├── notifications/ # Real-time notifications
+│       │   ├── kafka/         # Event streaming
+│       │   ├── email/         # Email service
+│       │   ├── admin/         # Admin functionality
+│       │   └── health/        # Health checks
+│       ├── Dockerfile         # Backend container
+│       └── package.json
+├── packages/
+│   ├── database/              # Prisma database package
+│   │   ├── prisma/           # Schema & migrations
+│   │   └── src/              # Database utilities
+│   ├── shared-types/          # Shared TypeScript types
+│   ├── ui/                    # Shared UI components
+│   ├── typescript-config/     # Shared TS config
+│   └── eslint-config/         # Shared ESLint config
+├── scripts/                   # Docker & deployment scripts
+├── docker-compose.yml         # Production orchestration
+├── docker-compose.dev.yml     # Development infrastructure
+├── .env.example              # Environment template
+├── DOCKER.md                 # Docker documentation
+└── README.md                 # This file
+```
+
+## 🔧 Key Features Implemented
+
+### ✅ Authentication System
+- JWT-based authentication with refresh tokens
+- Email verification with 6-digit codes
+- Password reset functionality
+- Role-based access control (Admin, Client, Freelancer)
+- Protected routes with AuthGuard
+
+### ✅ Real-time Features
+- GraphQL subscriptions for live updates
+- WebSocket connections for real-time dashboard
+- Live user activity tracking
+- Real-time notifications
+
+### ✅ Database & ORM
+- PostgreSQL with Prisma ORM
+- Type-safe database operations
+- Database migrations and seeding
+- Comprehensive schema design
+
+### ✅ Event Streaming
+- Apache Kafka integration
+- Event-driven architecture
+- Order lifecycle events
+- Scalable message processing
+
+### ✅ Modern Frontend
+- Next.js 15 with App Router
+- TypeScript with strict typing
+- Tailwind CSS for styling
+- Custom path aliases (@components, @contexts, etc.)
+- Zod validation for forms
+
+### ✅ DevOps & Deployment
+- Separate Docker containers for frontend/backend
+- Development and production environments
+- Health checks and monitoring
+- Automated build scripts
 
 ---
 
