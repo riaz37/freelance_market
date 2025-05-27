@@ -15,6 +15,8 @@ yarn-error.log*
 # Build outputs
 dist/
 build/
+.next/
+out/
 
 # Logs
 logs
@@ -30,11 +32,21 @@ pids
 coverage/
 .nyc_output
 
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
 # Turbo
 .turbo
 
 # TypeScript
 *.tsbuildinfo
+next-env.d.ts
 
 # IDE
 .vscode/
@@ -47,11 +59,20 @@ Thumbs.db
 # Git
 .git
 .gitignore
-README.md
 
 # Docker
+docker-compose.yml
+docker-compose.dev.yml
 Dockerfile
 .dockerignore
+
+# Documentation
+README.md
+DOCKER.md
+*.md
+
+# Scripts (not needed in container)
+scripts/
 
 # Testing
 test/
