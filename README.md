@@ -188,7 +188,7 @@ pnpm install
 ##### Backend Environment (`apps/server/.env`)
 ```env
 # Database - Neon PostgreSQL
-DATABASE_URL=postgresql://neondb_owner:npg_XWSql4CA5zOY@ep-frosty-boat-a53u4vht-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require
+DATABASE_URL=""
 
 # JWT
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
