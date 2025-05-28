@@ -8,6 +8,7 @@ interface AuthGuardProps {
   children: React.ReactNode;
   requireAuth?: boolean;
   adminOnly?: boolean;
+  requiredRole?: 'ADMIN' | 'CLIENT' | 'FREELANCER';
   redirectTo?: string;
 }
 
@@ -19,7 +20,8 @@ export function AuthGuard({
   children,
   requireAuth = true,
   adminOnly = false,
-  redirectTo = '/login'
+  requiredRole,
+  redirectTo = '/auth/login'
 }: AuthGuardProps) {
   const { user, loading, isAuthenticated } = useAuth();
   const router = useRouter();
@@ -42,7 +44,12 @@ export function AuthGuard({
       router.push('/dashboard');
       return;
     }
-  }, [isClient, loading, isAuthenticated, user, requireAuth, adminOnly, router, redirectTo]);
+
+    if (requiredRole && user?.role !== requiredRole) {
+      router.push('/dashboard');
+      return;
+    }
+  }, [isClient, loading, isAuthenticated, user, requireAuth, adminOnly, requiredRole, router, redirectTo]);
 
   // Show loading spinner while checking authentication
   if (!isClient || loading) {
@@ -60,6 +67,11 @@ export function AuthGuard({
 
   // Don't render anything if admin access is required but user is not admin
   if (adminOnly && user?.role !== 'ADMIN') {
+    return null;
+  }
+
+  // Don't render anything if specific role is required but user doesn't have it
+  if (requiredRole && user?.role !== requiredRole) {
     return null;
   }
 

@@ -131,7 +131,7 @@ const Dashboard: React.FC = () => {
 
   // Use subscription data if available, otherwise fall back to query data
   const currentStats = statsSubscriptionData?.dashboardStatsUpdated || statsData?.adminDashboardStats;
-  const recentActivities = activityData?.myNotifications?.notifications || [];
+  const recentActivities = activityData?.myNotifications || [];
 
   if (statsLoading) {
     return (

@@ -92,19 +92,17 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      kafka:
-        condition: service_healthy
     environment:
       NODE_ENV: development
       PORT: 4000
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-freelance_market}
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-for-development}
       KAFKA_BROKER: kafka:29092
-      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
       EMAIL_PORT: ${EMAIL_PORT:-587}
       EMAIL_SECURE: ${EMAIL_SECURE:-false}
-      EMAIL_USER: ${EMAIL_USER}
-      EMAIL_PASS: ${EMAIL_PASS}
+      EMAIL_USER: ${EMAIL_USER:-}
+      EMAIL_PASS: ${EMAIL_PASS:-}
       EMAIL_FROM: ${EMAIL_FROM:-FreelanceMarket <noreply@freelancemarket.com>}
     ports:
       - "4000:4000"
@@ -113,10 +111,11 @@ services:
     volumes:
       - ./apps/server/uploads:/app/uploads
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/health"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
+      start_period: 90s
 
   # Frontend Web Application
   web:
@@ -126,8 +125,7 @@ services:
     container_name: freelance-web
     restart: unless-stopped
     depends_on:
-      server:
-        condition: service_healthy
+      - server
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_GRAPHQL_URL: http://localhost:4000/graphql

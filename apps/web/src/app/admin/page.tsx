@@ -6,6 +6,9 @@ import LoginForm from '@components/LoginForm';
 import Layout from '@components/Layout';
 import Dashboard from '@components/Dashboard';
 import UsersManagement from '@components/UsersManagement';
+import ProjectsManagement from '@components/ProjectsManagement';
+import OrdersManagement from '@components/OrdersManagement';
+import NotificationsManagement from '@components/NotificationsManagement';
 import { AuthGuard } from '@components/AuthGuard';
 
 // Disable static generation for this page since it requires authentication
@@ -21,9 +24,11 @@ const AdminContent: React.FC = () => {
       case 'users':
         return <UsersManagement />;
       case 'projects':
-        return <div className="text-center py-12">Projects management coming soon...</div>;
+        return <ProjectsManagement />;
       case 'orders':
-        return <div className="text-center py-12">Orders management coming soon...</div>;
+        return <OrdersManagement />;
+      case 'notifications':
+        return <NotificationsManagement />;
       case 'settings':
         return <div className="text-center py-12">Settings coming soon...</div>;
       default:

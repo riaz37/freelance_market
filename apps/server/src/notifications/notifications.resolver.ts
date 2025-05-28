@@ -12,7 +12,7 @@ export class NotificationsResolver {
   @Query(() => [Notification])
   async myNotifications(@Context() context) {
     const { user } = context.req;
-    return this.notificationsService.getUserNotifications(user.sub);
+    return this.notificationsService.getUserNotifications(user.id);
   }
 
   @UseGuards(JwtAuthGuard)

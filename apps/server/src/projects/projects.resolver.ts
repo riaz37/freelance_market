@@ -28,7 +28,7 @@ export class ProjectsResolver {
   @Query(() => [Project])
   async myProjects(@Context() context) {
     const { user } = context.req;
-    return this.projectsService.findByFreelancer(user.sub);
+    return this.projectsService.findByFreelancer(user.id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -39,7 +39,7 @@ export class ProjectsResolver {
     @Context() context,
   ) {
     const { user } = context.req;
-    return this.projectsService.create(user.sub, createProjectInput);
+    return this.projectsService.create(user.id, createProjectInput);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

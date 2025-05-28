@@ -18,16 +18,22 @@ export default function Home() {
 
             <div className="flex items-center space-x-4">
               <Link
-                href="/login"
+                href="/auth/login"
                 className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
               >
                 Sign in
               </Link>
               <Link
-                href="/register"
+                href="/auth/register"
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 Get started
+              </Link>
+              <Link
+                href="/dashboard"
+                className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              >
+                Dashboard
               </Link>
             </div>
           </div>
@@ -51,13 +57,13 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link
-              href="/register"
+              href="/auth/register"
               className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors"
             >
               Start as a Freelancer
             </Link>
             <Link
-              href="/register"
+              href="/auth/register"
               className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg border-2 border-blue-600 hover:bg-blue-50 transition-colors"
             >
               Hire Talent
@@ -129,7 +135,7 @@ export default function Home() {
             Join thousands of professionals already using FreelanceMarket
           </p>
           <Link
-            href="/register"
+            href="/auth/register"
             className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors inline-block"
           >
             Create Your Account
@@ -156,18 +162,18 @@ export default function Home() {
             <div>
               <h4 className="font-semibold mb-4">For Freelancers</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><Link href="/register" className="hover:text-white">Find Work</Link></li>
-                <li><Link href="/register" className="hover:text-white">Build Profile</Link></li>
-                <li><Link href="/register" className="hover:text-white">Get Paid</Link></li>
+                <li><Link href="/auth/register" className="hover:text-white">Find Work</Link></li>
+                <li><Link href="/auth/register" className="hover:text-white">Build Profile</Link></li>
+                <li><Link href="/auth/register" className="hover:text-white">Get Paid</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-semibold mb-4">For Clients</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><Link href="/register" className="hover:text-white">Post Projects</Link></li>
-                <li><Link href="/register" className="hover:text-white">Find Talent</Link></li>
-                <li><Link href="/register" className="hover:text-white">Manage Teams</Link></li>
+                <li><Link href="/auth/register" className="hover:text-white">Post Projects</Link></li>
+                <li><Link href="/auth/register" className="hover:text-white">Find Talent</Link></li>
+                <li><Link href="/auth/register" className="hover:text-white">Manage Teams</Link></li>
               </ul>
             </div>
 

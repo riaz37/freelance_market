@@ -7,6 +7,7 @@ import {
   UsersIcon,
   BriefcaseIcon,
   ClipboardDocumentListIcon,
+  BellIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
@@ -24,6 +25,7 @@ const navigation = [
   { name: 'Users', href: 'users', icon: UsersIcon },
   { name: 'Projects', href: 'projects', icon: BriefcaseIcon },
   { name: 'Orders', href: 'orders', icon: ClipboardDocumentListIcon },
+  { name: 'Notifications', href: 'notifications', icon: BellIcon },
   { name: 'Settings', href: 'settings', icon: Cog6ToothIcon },
 ];
 

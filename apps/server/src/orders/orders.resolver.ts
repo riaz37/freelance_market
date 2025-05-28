@@ -24,7 +24,7 @@ export class OrdersResolver {
   @Query(() => [Order])
   async myOrders(@Context() context) {
     const { user } = context.req;
-    return this.ordersService.findByClient(user.sub);
+    return this.ordersService.findByClient(user.id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -32,7 +32,7 @@ export class OrdersResolver {
   @Query(() => [Order])
   async receivedOrders(@Context() context) {
     const { user } = context.req;
-    return this.ordersService.findByFreelancer(user.sub);
+    return this.ordersService.findByFreelancer(user.id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -43,7 +43,7 @@ export class OrdersResolver {
     @Context() context,
   ) {
     const { user } = context.req;
-    return this.ordersService.create(user.sub, createOrderInput);
+    return this.ordersService.create(user.id, createOrderInput);
   }
 
   @UseGuards(JwtAuthGuard)

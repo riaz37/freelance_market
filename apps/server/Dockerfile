@@ -77,13 +77,16 @@ COPY --from=builder --chown=nestjs:nodejs /app/packages/shared-types/dist ./pack
 # Copy scripts
 COPY --from=builder --chown=nestjs:nodejs /app/apps/server/scripts ./apps/server/scripts
 
+# Create src directory for GraphQL schema generation with proper permissions
+RUN mkdir -p /app/src && chown -R nestjs:nodejs /app/src
+
 USER nestjs
 
 EXPOSE 4000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:4000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:4000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
 
 # Start the application
 CMD ["node", "apps/server/dist/main.js"]

@@ -16,6 +16,26 @@ const DashboardContent: React.FC = () => {
   // Since this is wrapped in AuthGuard, user will never be null
   if (!user) return null;
 
+  // Redirect to role-specific dashboard
+  React.useEffect(() => {
+    if (user) {
+      switch (user.role) {
+        case 'ADMIN':
+          router.push('/admin');
+          break;
+        case 'CLIENT':
+          router.push('/client');
+          break;
+        case 'FREELANCER':
+          router.push('/freelancer');
+          break;
+        default:
+          // Stay on current page if role is unknown
+          break;
+      }
+    }
+  }, [user, router]);
+
   const handleLogout = () => {
     logout();
     router.push('/');

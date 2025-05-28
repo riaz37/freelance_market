@@ -178,20 +178,17 @@ export const ORDER_UPDATES_SUBSCRIPTION = gql`
 // Recent Activity Query
 export const GET_RECENT_ACTIVITY = gql`
   query GetRecentActivity {
-    myNotifications(skip: 0, take: 10) {
-      notifications {
-        id
-        type
-        content
-        isRead
-        createdAt
-        sender {
-          firstName
-          lastName
-          email
-        }
+    myNotifications {
+      id
+      type
+      content
+      isRead
+      createdAt
+      sender {
+        firstName
+        lastName
+        email
       }
-      total
     }
   }
 `;
@@ -223,6 +220,367 @@ export const RESEND_VERIFICATION_MUTATION = gql`
   mutation ResendVerificationCode($resendVerificationInput: ResendVerificationInput!) {
     resendVerificationCode(resendVerificationInput: $resendVerificationInput) {
       message
+    }
+  }
+`;
+
+// Projects Queries and Mutations
+export const GET_ALL_PROJECTS = gql`
+  query GetAllProjects {
+    projects {
+      id
+      title
+      description
+      price
+      status
+      tags
+      createdAt
+      updatedAt
+      freelancer {
+        id
+        firstName
+        lastName
+        email
+        bio
+        skills
+        hourlyRate
+      }
+    }
+  }
+`;
+
+export const GET_PROJECT_BY_ID = gql`
+  query GetProject($id: String!) {
+    project(id: $id) {
+      id
+      title
+      description
+      price
+      status
+      tags
+      createdAt
+      updatedAt
+      freelancer {
+        id
+        firstName
+        lastName
+        email
+        bio
+        skills
+        hourlyRate
+      }
+    }
+  }
+`;
+
+export const GET_MY_PROJECTS = gql`
+  query GetMyProjects {
+    myProjects {
+      id
+      title
+      description
+      price
+      status
+      tags
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const CREATE_PROJECT_MUTATION = gql`
+  mutation CreateProject($createProjectInput: CreateProjectInput!) {
+    createProject(createProjectInput: $createProjectInput) {
+      id
+      title
+      description
+      price
+      status
+      tags
+      createdAt
+      updatedAt
+      freelancer {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+`;
+
+export const UPDATE_PROJECT_MUTATION = gql`
+  mutation UpdateProject($updateProjectInput: UpdateProjectInput!) {
+    updateProject(updateProjectInput: $updateProjectInput) {
+      id
+      title
+      description
+      price
+      status
+      tags
+      updatedAt
+    }
+  }
+`;
+
+export const PUBLISH_PROJECT_MUTATION = gql`
+  mutation PublishProject($id: String!) {
+    publishProject(id: $id) {
+      id
+      status
+      updatedAt
+    }
+  }
+`;
+
+export const DELETE_PROJECT_MUTATION = gql`
+  mutation DeleteProject($id: String!) {
+    deleteProject(id: $id) {
+      id
+      title
+      status
+    }
+  }
+`;
+
+// Orders Queries and Mutations
+export const GET_ORDER_BY_ID = gql`
+  query GetOrder($id: String!) {
+    order(id: $id) {
+      id
+      projectId
+      status
+      totalAmount
+      requirements
+      deliveryDate
+      createdAt
+      updatedAt
+      project {
+        id
+        title
+        description
+        price
+        freelancer {
+          id
+          firstName
+          lastName
+          email
+        }
+      }
+      client {
+        id
+        firstName
+        lastName
+        email
+      }
+    }
+  }
+`;
+
+export const GET_MY_ORDERS = gql`
+  query GetMyOrders {
+    myOrders {
+      id
+      projectId
+      status
+      totalAmount
+      requirements
+      deliveryDate
+      createdAt
+      project {
+        id
+        title
+        freelancer {
+          id
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+`;
+
+export const GET_RECEIVED_ORDERS = gql`
+  query GetReceivedOrders {
+    receivedOrders {
+      id
+      projectId
+      status
+      totalAmount
+      requirements
+      deliveryDate
+      createdAt
+      project {
+        id
+        title
+      }
+      client {
+        id
+        firstName
+        lastName
+        email
+      }
+    }
+  }
+`;
+
+export const CREATE_ORDER_MUTATION = gql`
+  mutation CreateOrder($createOrderInput: CreateOrderInput!) {
+    createOrder(createOrderInput: $createOrderInput) {
+      id
+      projectId
+      status
+      totalAmount
+      requirements
+      deliveryDate
+      createdAt
+      project {
+        id
+        title
+      }
+      client {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+`;
+
+export const UPDATE_ORDER_MUTATION = gql`
+  mutation UpdateOrder($updateOrderInput: UpdateOrderInput!) {
+    updateOrder(updateOrderInput: $updateOrderInput) {
+      id
+      status
+      requirements
+      deliveryDate
+      updatedAt
+    }
+  }
+`;
+
+export const ACCEPT_ORDER_MUTATION = gql`
+  mutation AcceptOrder($id: String!) {
+    acceptOrder(id: $id) {
+      id
+      status
+      updatedAt
+    }
+  }
+`;
+
+export const START_ORDER_MUTATION = gql`
+  mutation StartOrder($id: String!) {
+    startOrder(id: $id) {
+      id
+      status
+      updatedAt
+    }
+  }
+`;
+
+export const COMPLETE_ORDER_MUTATION = gql`
+  mutation CompleteOrder($id: String!) {
+    completeOrder(id: $id) {
+      id
+      status
+      updatedAt
+    }
+  }
+`;
+
+export const REQUEST_REVISION_MUTATION = gql`
+  mutation RequestRevision($id: String!) {
+    requestRevision(id: $id) {
+      id
+      status
+      updatedAt
+    }
+  }
+`;
+
+export const CANCEL_ORDER_MUTATION = gql`
+  mutation CancelOrder($id: String!) {
+    cancelOrder(id: $id) {
+      id
+      status
+      updatedAt
+    }
+  }
+`;
+
+// Notifications Queries and Mutations
+export const GET_MY_NOTIFICATIONS = gql`
+  query GetMyNotifications {
+    myNotifications {
+      id
+      type
+      content
+      isRead
+      createdAt
+      sender {
+        id
+        firstName
+        lastName
+        email
+      }
+    }
+  }
+`;
+
+export const MARK_NOTIFICATION_READ_MUTATION = gql`
+  mutation MarkNotificationAsRead($id: String!) {
+    markNotificationAsRead(id: $id) {
+      id
+      isRead
+      updatedAt
+    }
+  }
+`;
+
+// Admin Queries
+export const GET_ADMIN_ACTIVE_PROJECTS = gql`
+  query GetAdminActiveProjects($skip: Int!, $take: Int!) {
+    adminActiveProjects(skip: $skip, take: $take) {
+      projects {
+        id
+        title
+        description
+        price
+        status
+        tags
+        createdAt
+        freelancer {
+          id
+          firstName
+          lastName
+        }
+      }
+      total
+      hasMore
+    }
+  }
+`;
+
+export const GET_ADMIN_RECENT_ORDERS = gql`
+  query GetAdminRecentOrders($skip: Int!, $take: Int!) {
+    adminRecentOrders(skip: $skip, take: $take) {
+      orders {
+        id
+        status
+        totalAmount
+        createdAt
+        project {
+          id
+          title
+        }
+        client {
+          id
+          firstName
+          lastName
+        }
+      }
+      total
+      hasMore
     }
   }
 `;

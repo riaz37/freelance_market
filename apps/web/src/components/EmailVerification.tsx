@@ -5,20 +5,50 @@ import { useMutation } from '@apollo/client';
 import { VERIFY_EMAIL_MUTATION, RESEND_VERIFICATION_MUTATION } from '@graphql';
 import { EnvelopeIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { emailVerificationSchema, validateFormData } from '@validation';
+import { useAuth } from '@contexts/AuthContext';
 
 interface EmailVerificationProps {
-  email: string;
+  email?: string;
   onVerificationSuccess?: () => void;
 }
 
-const EmailVerification: React.FC<EmailVerificationProps> = ({ email, onVerificationSuccess }) => {
+const EmailVerification: React.FC<EmailVerificationProps> = ({ email: propEmail, onVerificationSuccess }) => {
+  const { user } = useAuth();
   const [verificationCode, setVerificationCode] = useState('');
   const [isVerified, setIsVerified] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  // Use email from props or from auth context
+  const email = propEmail || user?.email || '';
+
   const [verifyEmail, { loading: verifyLoading }] = useMutation(VERIFY_EMAIL_MUTATION);
   const [resendCode, { loading: resendLoading }] = useMutation(RESEND_VERIFICATION_MUTATION);
+
+  // Show error if no email is available
+  if (!email) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-red-600 text-2xl">⚠️</span>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Email Required</h2>
+            <p className="text-gray-600 mb-6">
+              Please log in first to verify your email address.
+            </p>
+            <a
+              href="/auth/login"
+              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              Go to Login
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
