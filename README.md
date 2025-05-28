@@ -103,7 +103,7 @@ cd freelance_market
 pnpm install
 
 # 2. Start infrastructure (PostgreSQL, Kafka, etc.)
-pnpm docker:dev
+pnpm run docker:dev
 
 # 3. Set up environment
 cp .env.example apps/server/.env
@@ -126,7 +126,7 @@ cp .env.example .env
 # Edit .env with your configuration
 
 # 2. Deploy everything
-pnpm docker:deploy
+pnpm run docker:deploy
 ```
 
 #### Prerequisites for Manual Setup
@@ -203,6 +203,8 @@ pnpm -C apps/server dev
 pnpm -C apps/web dev
 ```
 
+> **Note**: If you encounter issues with the NestJS CLI (schematics binary path error), this is a known compatibility issue with pnpm. You can work around this by using npm for the server development or using Docker for development.
+
 ## 🌐 Application URLs
 
 ### Development
@@ -219,18 +221,17 @@ pnpm -C apps/web dev
 
 ### Development Commands
 ```bash
-pnpm docker:dev          # Start infrastructure only
-pnpm docker:down:dev     # Stop development services
-pnpm docker:logs:dev     # View development logs
+pnpm run docker:dev      # Start infrastructure only
+pnpm run docker:down     # Stop development services
+pnpm run docker:logs     # View development logs
 ```
 
 ### Deployment Commands
 ```bash
-pnpm docker:deploy       # Full Docker deployment
-pnpm docker:build        # Build Docker images
-pnpm docker:build:rebuild # Clean rebuild
-pnpm docker:down         # Stop services
-pnpm docker:logs         # View logs
+pnpm run docker:deploy   # Full Docker deployment
+pnpm run docker:build    # Build Docker images
+pnpm run docker:down     # Stop services
+pnpm run docker:logs     # View logs
 ```
 
 ### Docker Architecture
@@ -526,11 +527,11 @@ pnpm check-types           # TypeScript type checking
 pnpm format                # Format code with Prettier
 
 # Docker commands
-pnpm docker:dev            # Start development infrastructure
-pnpm docker:deploy         # Full Docker deployment
-pnpm docker:build          # Build Docker images
-pnpm docker:down           # Stop services
-pnpm docker:logs           # View logs
+pnpm run docker:dev        # Start development infrastructure
+pnpm run docker:deploy     # Full Docker deployment
+pnpm run docker:build      # Build Docker images
+pnpm run docker:down       # Stop services
+pnpm run docker:logs       # View logs
 ```
 
 #### Backend (`apps/server/`)
@@ -596,6 +597,45 @@ npm run test:watch
 - **Frontend**: Next.js built-in debugging
 - **Database**: Prisma Studio for data inspection
 - **GraphQL**: GraphQL Playground for API testing
+
+### Troubleshooting
+
+#### NestJS CLI Issues
+If you encounter "schematics binary path could not be found" error:
+```bash
+# Option 1: Use npm for server development
+cd apps/server
+npm install
+npm run dev
+
+# Option 2: Use Docker for development
+pnpm run docker:dev
+# Then run applications in containers
+```
+
+#### Docker Issues
+```bash
+# Clean up Docker resources
+docker system prune -a
+
+# Rebuild containers
+pnpm run docker:build
+
+# Check container logs
+pnpm run docker:logs
+```
+
+#### Database Issues
+```bash
+# Reset database
+pnpm -C packages/database db:reset
+
+# Regenerate Prisma client
+pnpm -C packages/database db:generate
+
+# Check database connection
+pnpm -C packages/database db:studio
+```
 
 ## 📁 Project Structure
 
@@ -673,11 +713,11 @@ freelance_market/
 - Custom path aliases (@components, @contexts, etc.)
 - Zod validation for forms
 
-### ✅ DevOps & Deployment
+### ✅ Docker & Deployment
 - Separate Docker containers for frontend/backend
 - Development and production environments
 - Health checks and monitoring
-- Automated build scripts
+- Docker Compose orchestration
 
 ---
 
