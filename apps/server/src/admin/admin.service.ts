@@ -84,6 +84,7 @@ export class AdminService {
     return {
       projects,
       total,
+      hasMore: skip + take < total,
     };
   }
 
@@ -108,6 +109,7 @@ export class AdminService {
     return {
       orders,
       total,
+      hasMore: skip + take < total,
     };
   }
 

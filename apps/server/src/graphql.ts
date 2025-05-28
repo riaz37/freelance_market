@@ -153,8 +153,8 @@ export class Notification {
     isRead: boolean;
     receiver: User;
     receiverId: string;
-    sender: User;
-    senderId: string;
+    sender?: Nullable<User>;
+    senderId?: Nullable<string>;
     type: NotificationType;
 }
 
@@ -173,11 +173,13 @@ export class Order {
 }
 
 export class PaginatedOrders {
+    hasMore: boolean;
     orders: Order[];
     total: number;
 }
 
 export class PaginatedProjects {
+    hasMore: boolean;
     projects: Project[];
     total: number;
 }

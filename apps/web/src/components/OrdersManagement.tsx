@@ -6,6 +6,7 @@ import { useAuth } from '@contexts/AuthContext';
 import {
   GET_MY_ORDERS,
   GET_RECEIVED_ORDERS,
+  GET_ADMIN_RECENT_ORDERS,
   CREATE_ORDER_MUTATION,
   UPDATE_ORDER_MUTATION,
   ACCEPT_ORDER_MUTATION,
@@ -59,9 +60,22 @@ const OrdersManagement: React.FC = () => {
 
   // Determine which query to use based on user role
   const isClient = user?.role === 'CLIENT';
-  const query = isClient ? GET_MY_ORDERS : GET_RECEIVED_ORDERS;
-  
+  const isAdmin = user?.role === 'ADMIN';
+
+  let query;
+  let queryVariables = {};
+
+  if (isAdmin) {
+    query = GET_ADMIN_RECENT_ORDERS;
+    queryVariables = { skip: 0, take: 50 }; // Get more orders for admin
+  } else if (isClient) {
+    query = GET_MY_ORDERS;
+  } else {
+    query = GET_RECEIVED_ORDERS;
+  }
+
   const { data, loading, error, refetch } = useQuery(query, {
+    variables: queryVariables,
     fetchPolicy: 'cache-and-network',
   });
 
@@ -72,7 +86,7 @@ const OrdersManagement: React.FC = () => {
   const [requestRevision] = useMutation(REQUEST_REVISION_MUTATION);
   const [cancelOrder] = useMutation(CANCEL_ORDER_MUTATION);
 
-  const orders: Order[] = data?.myOrders || data?.receivedOrders || [];
+  const orders: Order[] = data?.myOrders || data?.receivedOrders || data?.adminRecentOrders?.orders || [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -167,8 +181,13 @@ const OrdersManagement: React.FC = () => {
 
   const getAvailableActions = (order: Order) => {
     const actions = [];
-    
-    if (isClient) {
+
+    if (isAdmin) {
+      // Admin actions - limited to viewing and cancelling problematic orders
+      if (order.status === 'DISPUTED') {
+        actions.push({ label: 'Cancel Order', action: 'cancel', color: 'bg-red-600 hover:bg-red-700' });
+      }
+    } else if (isClient) {
       // Client actions
       if (order.status === 'PENDING' || order.status === 'ACCEPTED') {
         actions.push({ label: 'Cancel', action: 'cancel', color: 'bg-red-600 hover:bg-red-700' });
@@ -223,10 +242,12 @@ const OrdersManagement: React.FC = () => {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">
-          {isClient ? 'My Orders' : 'Received Orders'}
+          {isAdmin ? 'All Orders' : isClient ? 'My Orders' : 'Received Orders'}
         </h1>
         <p className="text-slate-600 mt-1">
-          {isClient 
+          {isAdmin
+            ? 'Monitor all orders across the platform'
+            : isClient
             ? 'Track your project orders and communicate with freelancers'
             : 'Manage incoming orders and deliver quality work'
           }
@@ -251,7 +272,7 @@ const OrdersManagement: React.FC = () => {
                   placeholder="Update project requirements..."
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
                   Delivery Date
@@ -263,7 +284,7 @@ const OrdersManagement: React.FC = () => {
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
-              
+
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
@@ -335,8 +356,8 @@ const OrdersManagement: React.FC = () => {
                   {action.label}
                 </button>
               ))}
-              
-              {(isClient && ['PENDING', 'ACCEPTED', 'IN_PROGRESS'].includes(order.status)) && (
+
+              {(!isAdmin && isClient && ['PENDING', 'ACCEPTED', 'IN_PROGRESS'].includes(order.status)) && (
                 <button
                   onClick={() => openUpdateForm(order)}
                   className="bg-slate-100 text-slate-700 px-3 py-2 rounded-lg hover:bg-slate-200 transition-colors text-sm"
@@ -355,10 +376,12 @@ const OrdersManagement: React.FC = () => {
             <ClockIcon className="h-12 w-12 mx-auto" />
           </div>
           <h3 className="text-lg font-medium text-slate-900 mb-2">
-            {isClient ? 'No orders yet' : 'No orders received'}
+            {isAdmin ? 'No orders in the system' : isClient ? 'No orders yet' : 'No orders received'}
           </h3>
           <p className="text-slate-600">
-            {isClient 
+            {isAdmin
+              ? 'Orders will appear here as users place them'
+              : isClient
               ? 'Browse projects and place your first order'
               : 'Orders will appear here when clients hire you'
             }

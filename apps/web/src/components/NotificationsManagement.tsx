@@ -23,7 +23,7 @@ interface Notification {
   content: string;
   isRead: boolean;
   createdAt: string;
-  sender: {
+  sender?: {
     id: string;
     firstName: string;
     lastName: string;
@@ -236,9 +236,11 @@ const NotificationsManagement: React.FC = () => {
                     <p className={`text-sm mt-1 ${notification.isRead ? 'text-slate-500' : 'text-slate-600'}`}>
                       {notification.content}
                     </p>
-                    <p className={`text-xs mt-1 ${notification.isRead ? 'text-slate-400' : 'text-slate-500'}`}>
-                      from {notification.sender.firstName} {notification.sender.lastName}
-                    </p>
+                    {notification.sender && (
+                      <p className={`text-xs mt-1 ${notification.isRead ? 'text-slate-400' : 'text-slate-500'}`}>
+                        from {notification.sender.firstName} {notification.sender.lastName}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2 ml-4">

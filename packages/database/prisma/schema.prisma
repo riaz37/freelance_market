@@ -112,8 +112,8 @@ model Notification {
   type        NotificationType
   content     String
   isRead      Boolean          @default(false)
-  senderId    String
-  sender      User             @relation("SenderNotifications", fields: [senderId], references: [id])
+  senderId    String?
+  sender      User?            @relation("SenderNotifications", fields: [senderId], references: [id])
   receiverId  String
   receiver    User             @relation("ReceiverNotifications", fields: [receiverId], references: [id])
   createdAt   DateTime         @default(now())

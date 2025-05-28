@@ -16,11 +16,11 @@ export class Notification {
   @Field()
   isRead: boolean;
 
-  @Field()
-  senderId: string;
+  @Field({ nullable: true })
+  senderId?: string;
 
-  @Field(() => User)
-  sender: User;
+  @Field(() => User, { nullable: true })
+  sender?: User;
 
   @Field()
   receiverId: string;

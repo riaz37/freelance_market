@@ -8,4 +8,7 @@ export class PaginatedProjects {
 
   @Field(() => Int)
   total: number;
+
+  @Field()
+  hasMore: boolean;
 }

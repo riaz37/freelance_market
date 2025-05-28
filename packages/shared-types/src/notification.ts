@@ -8,7 +8,7 @@ export interface Notification {
   type: NotificationType;
   content: string;
   isRead: boolean;
-  senderId: string;
+  senderId?: string;
   receiverId: string;
   createdAt: Date;
 }

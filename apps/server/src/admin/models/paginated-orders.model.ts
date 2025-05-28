@@ -8,4 +8,7 @@ export class PaginatedOrders {
 
   @Field(() => Int)
   total: number;
+
+  @Field()
+  hasMore: boolean;
 }

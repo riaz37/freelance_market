@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useAuth } from '@contexts/AuthContext';
 import LoginForm from '@components/LoginForm';
 import Layout from '@components/Layout';
-import Dashboard from '@components/Dashboard';
 import ProjectBrowser from '@components/ProjectBrowser';
 import OrdersManagement from '@components/OrdersManagement';
 import NotificationsManagement from '@components/NotificationsManagement';
@@ -24,8 +23,6 @@ const ClientContent: React.FC = () => {
         return <OrdersManagement />;
       case 'notifications':
         return <NotificationsManagement />;
-      case 'dashboard':
-        return <Dashboard />;
       default:
         return <ProjectBrowser />;
     }
@@ -51,7 +48,6 @@ const ClientLayout: React.FC<{
     { name: 'Browse Projects', href: 'browse', icon: 'search' },
     { name: 'My Orders', href: 'orders', icon: 'clipboard' },
     { name: 'Notifications', href: 'notifications', icon: 'bell' },
-    { name: 'Dashboard', href: 'dashboard', icon: 'home' },
   ];
 
   return (
@@ -82,7 +78,6 @@ const ClientLayout: React.FC<{
                       {item.icon === 'search' && '🔍'}
                       {item.icon === 'clipboard' && '📋'}
                       {item.icon === 'bell' && '🔔'}
-                      {item.icon === 'home' && '🏠'}
                     </span>
                     {item.name}
                   </button>
@@ -178,7 +173,6 @@ const ClientLayout: React.FC<{
                     {item.icon === 'search' && '🔍'}
                     {item.icon === 'clipboard' && '📋'}
                     {item.icon === 'bell' && '🔔'}
-                    {item.icon === 'home' && '🏠'}
                   </span>
                   {item.name}
                 </button>

@@ -66,8 +66,8 @@ type Notification {
   isRead: Boolean!
   receiver: User!
   receiverId: String!
-  sender: User!
-  senderId: String!
+  sender: User
+  senderId: String
   type: NotificationType!
 }
 
@@ -134,11 +134,13 @@ enum OrderStatus {
 }
 
 type PaginatedOrders {
+  hasMore: Boolean!
   orders: [Order!]!
   total: Int!
 }
 
 type PaginatedProjects {
+  hasMore: Boolean!
   projects: [Project!]!
   total: Int!
 }
