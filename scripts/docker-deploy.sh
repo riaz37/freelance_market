@@ -36,13 +36,17 @@ docker-compose -f docker-compose.yml up -d --build
 print_status "Waiting for services to be ready..."
 sleep 30
 
+# Push database schema first
+print_status "Pushing database schema..."
+docker-compose -f docker-compose.yml exec server pnpm -C packages/database db:push
+
 # Run database migrations
 print_status "Running database migrations..."
 docker-compose -f docker-compose.yml exec server pnpm -C packages/database db:migrate
 
 # Seed admin user if needed
 print_status "Seeding admin user..."
-docker-compose -f docker-compose.yml exec server pnpm -C apps/server seed:admin
+docker-compose -f docker-compose.yml exec server sh -c "cd apps/server && node dist/scripts/seed-admin.js || echo 'Admin seeding skipped (may already exist)'"
 
 print_success "Docker deployment completed!"
 print_status "Application is running at:"

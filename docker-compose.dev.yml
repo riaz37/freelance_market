@@ -1,21 +1,4 @@
-version: '3.8'
-
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: freelance-postgres-dev
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: freelance_market_dev
-    volumes:
-      - postgres_dev_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - freelance-dev-network
 
   # Zookeeper for Kafka
   zookeeper:
@@ -69,7 +52,3 @@ services:
 networks:
   freelance-dev-network:
     driver: bridge
-
-volumes:
-  postgres_dev_data:
-    driver: local

@@ -39,13 +39,13 @@ nano .env
 **Infrastructure in Docker + Apps running locally**
 
 ```bash
-# Start infrastructure
+# Start infrastructure (Kafka only)
 pnpm docker:dev
 
 # Set up server environment
 cp apps/server/.env.example apps/server/.env
 # Edit apps/server/.env:
-# - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/freelance_market_dev
+# - DATABASE_URL=postgresql://neondb_owner:npg_XWSql4CA5zOY@ep-frosty-boat-a53u4vht-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require
 # - KAFKA_BROKER=localhost:9092
 
 # Set up web environment
@@ -65,9 +65,9 @@ pnpm -C apps/web dev
 # Set up root environment
 cp .env.example .env
 # Edit .env:
-# - Update passwords if needed
 # - Configure email settings
-# - Set your preferred database name
+# - Update JWT secret if needed
+# - Database is already configured with Neon
 
 # Deploy
 pnpm docker:deploy
@@ -76,15 +76,15 @@ pnpm docker:deploy
 ## 🔐 Security Notes
 
 ### Development
-- ✅ Use default passwords for local development
+- ✅ Database is managed by Neon (cloud PostgreSQL)
 - ✅ Keep debug features enabled
 - ✅ Use localhost URLs
 - ✅ GraphQL Playground enabled for testing
 
 ### Docker Deployment
-- ⚠️ **Change default passwords if exposing to network**
 - ⚠️ **Use real email credentials for email functionality**
 - ⚠️ **Generate secure JWT secret for better security**
+- ⚠️ **Database connection is secure with SSL**
 
 ## 📧 Email Configuration
 
@@ -113,9 +113,9 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ## 🐛 Troubleshooting
 
 ### Database Connection Issues
-- Check if PostgreSQL is running: `docker ps`
-- Verify DATABASE_URL format
-- Ensure port 5432 is not blocked
+- Verify DATABASE_URL format for Neon
+- Check internet connectivity (Neon is cloud-based)
+- Ensure SSL mode is set to 'require'
 
 ### Kafka Connection Issues
 - Check if Kafka is running: `docker logs kafka`

@@ -1,27 +1,4 @@
-version: '3.8'
-
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: freelance-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-freelance_market}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./packages/database/init-scripts:/docker-entrypoint-initdb.d
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    networks:
-      - freelance-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # Zookeeper for Kafka
   zookeeper:
@@ -90,12 +67,11 @@ services:
     container_name: freelance-server
     restart: unless-stopped
     depends_on:
-      postgres:
-        condition: service_healthy
+      - kafka
     environment:
       NODE_ENV: development
       PORT: 4000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-freelance_market}
+      DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-for-development}
       KAFKA_BROKER: kafka:29092
       EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
@@ -140,8 +116,6 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
-    driver: local
   zookeeper_data:
     driver: local
   zookeeper_logs:

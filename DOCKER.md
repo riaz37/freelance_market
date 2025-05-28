@@ -28,7 +28,7 @@ Then run applications locally:
 # Terminal 1 - Backend
 pnpm -C apps/server dev
 
-# Terminal 2 - Frontend  
+# Terminal 2 - Frontend
 pnpm -C apps/web dev
 ```
 
@@ -142,16 +142,15 @@ pnpm docker:prod
 # Check what's using ports
 lsof -i :3000
 lsof -i :4000
-lsof -i :5432
+lsof -i :9092
 ```
 
 2. **Database connection issues**:
 ```bash
-# Check PostgreSQL logs
-docker logs freelance-postgres
+# Check server logs for database connection errors
+docker logs freelance-server
 
-# Test connection
-docker exec -it freelance-postgres psql -U postgres -d freelance_market
+# Verify Neon database connection string in environment
 ```
 
 3. **Build failures**:
@@ -180,7 +179,7 @@ pnpm docker:logs
 # Specific service
 docker logs freelance-server
 docker logs freelance-web
-docker logs freelance-postgres
+docker logs freelance-kafka
 
 # Follow logs
 docker logs -f freelance-server
@@ -237,11 +236,13 @@ Add nginx or traefik for load balancing multiple instances.
 ## Backup and Recovery
 
 ### Database Backup
-```bash
-docker exec freelance-postgres pg_dump -U postgres freelance_market > backup.sql
-```
+Database is managed by Neon PostgreSQL cloud service. Use Neon's built-in backup features:
+- Automatic daily backups
+- Point-in-time recovery
+- Manual backup exports via Neon dashboard
 
 ### Volume Backup
 ```bash
-docker run --rm -v freelance_market_postgres_data:/data -v $(pwd):/backup alpine tar czf /backup/postgres-backup.tar.gz /data
+# Backup Kafka data (if needed)
+docker run --rm -v freelance_market_kafka_data:/data -v $(pwd):/backup alpine tar czf /backup/kafka-backup.tar.gz /data
 ```

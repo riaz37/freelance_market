@@ -23,9 +23,9 @@ docker-compose -f docker-compose.dev.yml up -d
 
 print_success "Development infrastructure started!"
 print_status "Services running:"
-echo "  - PostgreSQL: localhost:5432"
 echo "  - Kafka: localhost:9092"
 echo "  - Kafka UI: http://localhost:8080"
+echo "  - Database: Neon PostgreSQL (cloud)"
 echo ""
 print_status "Now you can run your applications locally:"
 echo "  - Server: pnpm -C apps/server dev"

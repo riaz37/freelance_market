@@ -187,8 +187,8 @@ pnpm install
 
 ##### Backend Environment (`apps/server/.env`)
 ```env
-# Database
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/freelance_market_dev
+# Database - Neon PostgreSQL
+DATABASE_URL=postgresql://neondb_owner:npg_XWSql4CA5zOY@ep-frosty-boat-a53u4vht-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require
 
 # JWT
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
@@ -267,7 +267,6 @@ pnpm -C apps/web dev
 
 ### Docker Services
 - **Kafka UI**: http://localhost:8080
-- **PostgreSQL**: localhost:5432
 
 ## 🐳 Docker Commands
 
@@ -291,9 +290,9 @@ pnpm run docker:logs     # View logs
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │    Backend      │    │  Infrastructure │
 │   (Next.js)     │    │   (NestJS)      │    │                 │
-│   Port: 3000    │    │   Port: 4000    │    │  PostgreSQL     │
-│   Container     │    │   Container     │    │  Kafka          │
-│                 │    │                 │    │  Zookeeper      │
+│   Port: 3000    │    │   Port: 4000    │    │  Kafka          │
+│   Container     │    │   Container     │    │  Zookeeper      │
+│                 │    │   + Neon DB     │    │  Kafka UI       │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 

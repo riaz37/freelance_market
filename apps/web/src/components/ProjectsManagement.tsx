@@ -153,7 +153,7 @@ const ProjectsManagement: React.FC = () => {
       refetch();
     } catch (error) {
       console.error("Error saving project:", error);
-      alert(`Error saving project: ${error.message}`);
+      alert(`Error saving project: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 

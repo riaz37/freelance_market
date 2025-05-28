@@ -44,6 +44,9 @@ RUN pnpm -C packages/database build
 # Build the server application
 RUN pnpm -C apps/server build
 
+# Compile the seed script
+RUN cd apps/server && npx tsc scripts/seed-admin.ts --outDir dist/scripts --moduleResolution node --esModuleInterop --target es2020 --lib es2020
+
 # Production stage
 FROM base AS runner
 WORKDIR /app
@@ -64,7 +67,12 @@ COPY packages/database/package.json ./packages/database/
 COPY packages/shared-types/package.json ./packages/shared-types/
 
 # Install only production dependencies
-RUN pnpm install --frozen-lockfile --prod
+# Use --unsafe-perm to avoid permission issues with Prisma
+RUN pnpm install --frozen-lockfile --prod --unsafe-perm
+
+# Ensure Prisma directory has correct permissions
+RUN mkdir -p /app/node_modules/.pnpm/prisma@6.8.2_typescript@5.8.2/node_modules/prisma && \
+    chown -R nestjs:nodejs /app/node_modules
 
 # Copy built application and dependencies
 COPY --from=builder --chown=nestjs:nodejs /app/apps/server/dist ./apps/server/dist
@@ -74,8 +82,8 @@ COPY --from=builder --chown=nestjs:nodejs /app/packages/database/prisma ./packag
 COPY --from=builder --chown=nestjs:nodejs /app/packages/database/src/generated ./packages/database/src/generated
 COPY --from=builder --chown=nestjs:nodejs /app/packages/shared-types/dist ./packages/shared-types/dist
 
-# Copy scripts
-COPY --from=builder --chown=nestjs:nodejs /app/apps/server/scripts ./apps/server/scripts
+# Copy compiled seed script
+COPY --from=builder --chown=nestjs:nodejs /app/apps/server/dist/scripts ./apps/server/dist/scripts
 
 # Create src directory for GraphQL schema generation with proper permissions
 RUN mkdir -p /app/src && chown -R nestjs:nodejs /app/src

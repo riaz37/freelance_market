@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { config } from 'dotenv';
 import { resolve } from 'path';
 import { PrismaClient } from '@repo/database';
 import * as bcrypt from 'bcrypt';
 
-// Load environment variables from server's .env file (fallback to root if not found)
-config({ path: resolve(__dirname, '../.env') }) || config({ path: resolve(__dirname, '../../../.env') });
+// Load environment variables - use process.cwd() for Docker environment
+config({ path: resolve(process.cwd(), '.env') }) ||
+  config({ path: resolve(process.cwd(), 'apps/server/.env') }) ||
+  config({ path: resolve(process.cwd(), '../../../.env') });
 
 const prisma = new PrismaClient();
 
@@ -12,7 +15,7 @@ async function seedAdmin() {
   try {
     // Check if admin already exists
     const existingAdmin = await prisma.user.findUnique({
-      where: { email: 'admin@example.com' }
+      where: { email: 'admin@example.com' },
     });
 
     if (existingAdmin) {
@@ -34,15 +37,14 @@ async function seedAdmin() {
         isVerified: true,
         bio: 'System Administrator',
         skills: ['System Administration', 'User Management'],
-      }
+      },
     });
 
     console.log('Admin user created successfully:', {
       id: admin.id,
       email: admin.email,
-      role: admin.role
+      role: admin.role,
     });
-
   } catch (error) {
     console.error('Error creating admin user:', error);
   } finally {
