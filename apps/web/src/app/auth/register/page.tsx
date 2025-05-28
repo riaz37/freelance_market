@@ -9,7 +9,7 @@ const PublicRegisterPage: React.FC = () => {
   return (
     <AuthLayout
       title="Join FreelanceMarket"
-      subtitle="Create your account and start your journey"
+      subtitle="Create your account and start your journey now"
       showBackButton={true}
     >
       <PublicRegisterForm />
